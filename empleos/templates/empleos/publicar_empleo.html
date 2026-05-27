@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publicar Empleo</title>
+    <title>Publicar Empleo - Bolsa de Trabajo</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-100 min-h-screen font-sans">
 
-<body class="bg-gray-100 min-h-screen">
-
-    <nav class="bg-blue-700 text-white p-4 flex justify-between items-center">
+    <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-md">
         <h1 class="text-2xl font-bold">Bolsa de Trabajo</h1>
         <div class="space-x-4">
             <a href="{% url 'inicio' %}" class="hover:underline">Inicio</a>
@@ -18,96 +17,97 @@
         </div>
     </nav>
 
-    <div class="max-w-4xl mx-auto py-12 px-4">
-        <div class="bg-white rounded-2xl shadow-lg p-8">
-            <div class="mb-8">
-                <h2 class="text-4xl font-bold text-gray-800">Publicar Nuevo Empleo</h2>
-                <p class="text-gray-500 mt-2">Completa la información de la vacante</p>
+    <div class="max-w-3xl mx-auto py-12 px-4">
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            
+            <div class="mb-8 border-b border-gray-100 pb-4">
+                <h2 class="text-3xl font-bold text-gray-800">Publicar Nuevo Empleo</h2>
+                <p class="text-gray-500 mt-2">Completa la información requerida para la vacante laboral.</p>
             </div>
 
             <form method="POST" class="space-y-6">
                 {% csrf_token %}
 
                 <div>
-                    <label class="block text-gray-700 mb-2">Título del Empleo</label>
+                    <label class="block text-gray-700 font-semibold mb-2">Título del Empleo</label>
                     <input
                         type="text"
                         name="titulo" 
                         placeholder="Ej: Desarrollador Frontend"
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                </div>
-
-                <div>
-                    <label class="block text-gray-700 mb-2">Empresa</label>
-                    <input
-                        type="text"
-                        name="empresa_nombre"
-                        placeholder="Nombre de la empresa"
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+                        required>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-gray-700 mb-2">Ubicación</label>
+                        <label class="block text-gray-700 font-semibold mb-2">Ubicación</label>
                         <input
                             type="text"
                             name="ubicacion"
-                            placeholder="San Salvador"
-                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            placeholder="Ej: San Salvador"
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+                            required>
                     </div>
 
                     <div>
-                        <label class="block text-gray-700 mb-2">Tipo de Trabajo</label>
-                        <select
-                            name="tipo_trabajo"
-                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="tiempo_completo">Tiempo Completo</option>
-                            <option value="medio_tiempo">Medio Tiempo</option>
-                            <option value="remoto">Remoto</option>
-                            <option value="freelance">Freelance</option>
-                        </select>
+                        <label class="block text-gray-700 font-semibold mb-2">Fecha Límite de Aplicación</label>
+                        <input
+                            type="date"
+                            name="fecha_limite"
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+                            required>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-gray-700 mb-2">Categoría</label>
+                    <label class="block text-gray-700 font-semibold mb-2">Categoría</label>
                     <select
                         name="categoria"
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        class="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+                        required>
                         <option value="" selected disabled>Selecciona la especialidad...</option>
-                        
                         {% for cat in categorias %}
                             <option value="{{ cat.id }}">{{ cat.nombre }}</option>
                         {% endfor %}
-                        
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-gray-700 mb-2">Salario</label>
-                    <input
-                        type="text"
-                        name="salario"
-                        placeholder="$800 - $1200"
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-gray-700 font-semibold mb-2">Salario Mensual (Opcional)</label>
+                    <div class="relative rounded-xl shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">$</span>
+                        </div>
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="salario"
+                            placeholder="800.00"
+                            class="w-full border border-gray-300 rounded-xl pl-8 pr-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-gray-700 mb-2">Descripción del Empleo</label>
+                    <label class="block text-gray-700 font-semibold mb-2">Descripción del Empleo</label>
                     <textarea
                         name="descripcion"
-                        rows="6"
-                        placeholder="Describe las responsabilidades..."
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        rows="5"
+                        placeholder="Describe las responsabilidades, requisitos y beneficios..."
+                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+                        required></textarea>
                 </div>
 
-                <button
-                    type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition duration-300">
-                    Publicar Empleo
-                </button>
+                <div class="pt-4">
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300 transform active:scale-98">
+                        🚀 Publicar Oferta Laboral
+                    </button>
+                </div>
             </form>
+
         </div>
     </div>
+
 </body>
 </html>

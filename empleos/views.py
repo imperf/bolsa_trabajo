@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect  # Agregamos redirect
 from django.contrib.auth.models import User    # Agregamos el modelo User
 from django.contrib.auth import authenticate, login
@@ -116,11 +117,44 @@ def dashboard(request):
 
 
 def publicar_empleo(request):
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        ubicacion = request.POST.get('ubicacion')
+        categoria_id = request.POST.get('categoria')
+        salario = request.POST.get('salario')
+        descripcion = request.POST.get('descripcion')
+        fecha_limite = request.POST.get('fecha_limite')
+
+        # Buscar instancias correspondientes en la Base de Datos
+        categoria_instancia = Categoria.objects.get(pk=categoria_id) if categoria_id else None
+        
+        # Buscar la primera empresa registrada por defecto o enlazar a la correspondiente
+        empresa_instancia = Empresa.objects.first()
+
+        # Limpiar el salario si viene con texto o vacío
+        if salario:
+            salario = salario.replace('$', '').replace(',', '').strip()
+        else:
+            salario = None
+
+        # Guardar directamente en la base de datos de MySQL
+        Vacante.objects.create(
+            titulo=titulo,
+            ubicacion=ubicacion,
+            categoria=categoria_instancia,
+            empresa=empresa_instancia,
+            salario=salario,
+            descripcion=descripcion,
+            requisitos='No especificados',
+            estado='ACTIVA',
+            fecha_limite=fecha_limite
+        )
+        return redirect('lista_empleos')
+
     # Obtenemos todas las categorías guardadas
     categorias = Categoria.objects.all()
     
     return render(request, 'empleos/publicar_empleo.html', {
         'categorias': categorias
     })
-
 
