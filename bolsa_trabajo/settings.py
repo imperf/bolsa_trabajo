@@ -77,10 +77,10 @@ WSGI_APPLICATION = 'bolsa_trabajo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bolsa_trabajo', # Asegúrate de que esta BD ya esté creada en MySQL
-        'USER': 'root',             # Tu usuario de MySQL
-        'PASSWORD': '1234',  # Tu contraseña de MySQL
-        'HOST': 'localhost',        # Usa la IP en lugar de localhost para evitar conflictos
+        'NAME': 'bolsa_trabajo',
+        'USER': 'django_user',
+        'PASSWORD': 'MIRT2025$$',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -113,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/El_Salvador'
 
 USE_I18N = True
 
@@ -129,3 +129,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login / Logout redirects
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'

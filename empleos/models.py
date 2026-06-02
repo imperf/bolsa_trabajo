@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+
 
 # =========================
 # EMPRESA
@@ -118,37 +118,20 @@ class Postulacion(models.Model):
         return f"{self.candidato} -> {self.vacante}"
 
 
-# ======================================
-# ROLES (Administrado directo en MySQL)
-# ======================================
-class Roles(models.Model):
-    idrol = models.AutoField(primary_key=True, db_column='idrol')
-    descripcion = models.CharField(max_length=100)
-
-    class Meta:
-        db_table = 'roles'
-        managed = False  # Django no creará ni alterará esta tabla por consola
-
-    def __str__(self):
-        return self.descripcion
-
-
-# ======================================
-# PERFIL (Extensión de Usuario en MySQL)
-# ======================================
+# =========================
+# PERFIL (Extensión de Usuario)
+# =========================
 class Perfil(models.Model):
+    TIPO_USUARIO = [
+        ('empresa', 'Empresa/Reclutador'),
+        ('candidato', 'Candidato'),
+    ]
+
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
-    
-    # Vinculamos usando db_column para que use 'rol_id' que se configuró en tu MySQL
-    rol = models.ForeignKey(
-        Roles, 
-        on_delete=models.CASCADE, 
-        db_column='rol_id'
+    tipo_usuario = models.CharField(
+        max_length=20,
+        choices=TIPO_USUARIO
     )
 
-    class Meta:
-        db_table = 'empleos_perfil'
-        managed = False  # Django no modificará esta estructura mediante código
-
     def __str__(self):
-        return f"{self.usuario.username} - {self.rol.descripcion}"
+        return f"{self.usuario.username} - {self.tipo_usuario}"

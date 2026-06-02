@@ -1,12 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from django.db import connection
-
-# Función auxiliar para transformar los resultados de tuplas a diccionarios compatibles con las plantillas HTML
-def dictfetchall(cursor):
-    "Retorna todas las filas de un cursor como un diccionario"
-    columns = [col[0] for col in cursor.description]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+from django.contrib.auth.decorators import login_required
+from .models import Vacante, Empresa, Categoria, Perfil
 
 
 def inicio(request):
@@ -14,11 +9,8 @@ def inicio(request):
 
 
 def lista_empleos(request):
-    # Regla de BD: Se lee directamente desde la VISTA de MySQL
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM vw_vacantes_disponibles")
-        vacantes = dictfetchall(cursor)
-
+    # Obtener vacantes activas usando el ORM de Django
+    vacantes = Vacante.objects.filter(estado='ACTIVA').select_related('empresa', 'categoria')
     return render(
         request,
         'empleos/lista_empleos.html',
@@ -33,11 +25,8 @@ def detalle_empleo(request):
 
 
 def empresas(request):
-    # Consulta Directa SQL a la tabla Empresa
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM empleos_empresa")
-        lista_de_empresas = dictfetchall(cursor)
-    
+    # Obtener empresas usando el ORM de Django
+    lista_de_empresas = Empresa.objects.all()
     return render(
         request, 
         'empleos/empresas.html', 
@@ -52,7 +41,7 @@ def login_view(request):
         usuario_o_correo = request.POST.get('email') 
         clave = request.POST.get('password')
         
-        # El login requiere verificar la sesión del lado del servidor de aplicaciones
+        # Autenticar con Django auth
         user = authenticate(request, username=usuario_o_correo, password=clave)
         
         if user is not None:
@@ -63,7 +52,7 @@ def login_view(request):
                     return redirect('dashboard')
                 else:
                     return redirect('inicio')
-            except AttributeError:
+            except (AttributeError, Perfil.DoesNotExist):
                 return redirect('inicio')
         else:
             return render(request, 'empleos/login.html', {
@@ -75,34 +64,42 @@ def login_view(request):
 
 
 def registro(request):
-    # Consulta cruda para cargar el catálogo de roles directamente de la tabla 'roles'
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT idrol, descripcion FROM roles")
-        lista_roles = dictfetchall(cursor)
+    from django.contrib.auth.models import User
 
     if request.method == 'POST':
         nombre_completo = request.POST.get('nombre')
         usuario = request.POST.get('usuario')
         correo = request.POST.get('email')
         clave = request.POST.get('password')
-        tipo = request.POST.get('tipo_usuario')
-        idrol = request.POST.get('Idrol')
+        tipo = request.POST.get('tipo_usuario')  # 'empresa' or 'candidato'
         
-        # Regla de BD: Se envía todo a tu procedimiento almacenado transaccional de MySQL
-        with connection.cursor() as cursor:
-            cursor.callproc('sp_registrar_usuario', [usuario, correo, clave, nombre_completo, tipo, idrol])
+        # Crear usuario usando Django ORM
+        user = User.objects.create_user(
+            username=usuario,
+            email=correo,
+            password=clave,
+            first_name=nombre_completo
+        )
+        
+        # Crear perfil asociado
+        Perfil.objects.create(
+            usuario=user,
+            tipo_usuario=tipo
+        )
         
         return redirect('login')
         
-    return render(request, 'empleos/registro.html', {
-        'roles': lista_roles
-    })
+    return render(request, 'empleos/registro.html')
 
 
+@login_required
 def dashboard(request):
-    return render(request, 'empleos/dashboard.html')
+    # Obtener vacantes activas para el dashboard
+    vacantes = Vacante.objects.filter(estado='ACTIVA').select_related('empresa')
+    return render(request, 'empleos/dashboard.html', {'vacantes': vacantes})
 
 
+@login_required
 def publicar_empleo(request):
     if request.method == 'POST':
         titulo = request.POST.get('titulo')
@@ -112,7 +109,7 @@ def publicar_empleo(request):
         descripcion = request.POST.get('descripcion')
         fecha_limite = request.POST.get('fecha_limite')
 
-        # Sanitización de salarios para la inserción limpia en MySQL
+        # Sanitización de salarios
         if salario:
             salario = salario.replace('$', '').replace(',', '').strip()
             try:
@@ -122,18 +119,35 @@ def publicar_empleo(request):
         else:
             salario = None
 
-        categoria_id = int(categoria_id) if categoria_id else None
+        categoria_obj = Categoria.objects.get(id=categoria_id) if categoria_id else None
+        
+        # Obtener primera empresa (o asignar según el perfil)
+        empresa = Empresa.objects.first()
+        if not empresa:
+            # Crear una empresa por defecto si no existe
+            empresa = Empresa.objects.create(
+                nombre="Empresa Default",
+                descripcion="Empresa registrada en el sistema",
+                direccion="Sin dirección",
+                telefono="0000-0000",
+                correo="empresa@example.com"
+            )
 
-        # Regla de BD: Guardar llamando de forma directa a tu procedimiento 'sp_publicar_vacante'
-        with connection.cursor() as cursor:
-            cursor.callproc('sp_publicar_vacante', [titulo, ubicacion, categoria_id, salario, descripcion, fecha_limite])
+        # Crear vacante usando el ORM de Django
+        Vacante.objects.create(
+            titulo=titulo,
+            empresa=empresa,
+            ubicacion=ubicacion,
+            categoria=categoria_obj,
+            salario=salario,
+            descripcion=descripcion,
+            fecha_limite=fecha_limite
+        )
             
         return redirect('lista_empleos')
 
-    # Obtener categorías usando SQL puro para renderizar el formulario select
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT id, nombre FROM empleos_categoria")
-        categorias = dictfetchall(cursor)
+    # Obtener categorías para el formulario
+    categorias = Categoria.objects.all()
     
     return render(request, 'empleos/publicar_empleo.html', {
         'categorias': categorias
