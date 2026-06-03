@@ -1,48 +1,166 @@
 {% extends 'empleos/base.html' %}
 
-{% block title %}Detalle del Empleo - Bolsa de Trabajo{% endblock %}
+{% block title %}{{ vacante.titulo }} - Bolsa de Trabajo{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto py-12 px-4">
-
-    <div class="bg-white shadow rounded-xl p-8">
-
-        <h1 class="text-4xl font-bold text-blue-700">
-            Desarrollador Frontend
-        </h1>
-
-        <p class="text-gray-500 mt-2">
-            Tech Solutions • Remoto
-        </p>
-
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-3">
-                Descripción
-            </h2>
-
-            <p class="text-gray-600">
-                Buscamos un desarrollador frontend con experiencia
-                en HTML, CSS, JavaScript y Tailwind CSS.
-            </p>
+<section class="max-w-5xl mx-auto py-10 px-4">
+    
+    <!-- Encabezado de la vacante -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mb-6">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div class="flex-1">
+                <h1 class="text-4xl font-bold text-gray-800">{{ vacante.titulo }}</h1>
+                <p class="text-xl text-blue-600 mt-2 font-semibold">{{ vacante.empresa.nombre }}</p>
+                
+                <div class="flex flex-wrap gap-3 mt-4">
+                    <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                        📍 {{ vacante.ubicacion }}
+                    </span>
+                    <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+                        {{ vacante.get_tipo_contrato_display }}
+                    </span>
+                    {% if vacante.categoria %}
+                        <span class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
+                            {{ vacante.categoria.nombre }}
+                        </span>
+                    {% endif %}
+                    <span class="bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-medium">
+                        {{ vacante.get_nivel_experiencia_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="text-right">
+                {% if vacante.salario %}
+                    <p class="text-3xl font-bold text-green-600">${{ vacante.salario }}</p>
+                    <p class="text-gray-500 text-sm">mensual</p>
+                {% else %}
+                    <p class="text-xl font-semibold text-gray-500">Salario a convenir</p>
+                {% endif %}
+                <p class="text-sm text-gray-500 mt-2">👥 {{ vacante.numero_vacantes }} vacante{{ vacante.numero_vacantes|pluralize }}</p>
+            </div>
         </div>
 
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-3">
-                Requisitos
-            </h2>
-
-            <ul class="list-disc ml-6 text-gray-600 space-y-2">
-                <li>2 años de experiencia</li>
-                <li>Manejo de React</li>
-                <li>Trabajo en equipo</li>
-            </ul>
+        <!-- Botones de acción -->
+        <div class="mt-6 pt-6 border-t border-gray-100 flex flex-wrap gap-4">
+            {% if user.is_authenticated and user.perfil.tipo_usuario == 'candidato' %}
+                {% if ya_postulado %}
+                    <span class="bg-green-100 text-green-700 px-6 py-3 rounded-xl font-semibold flex items-center gap-2">
+                        ✓ Ya te has postulado
+                    </span>
+                {% else %}
+                    <a href="{% url 'postular_empleo' vacante.id %}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300 flex items-center gap-2">
+                        📝 Postularme a esta oferta
+                    </a>
+                {% endif %}
+            {% elif user.is_authenticated and user.perfil.tipo_usuario == 'empresa' %}
+                <span class="bg-gray-100 text-gray-600 px-6 py-3 rounded-xl font-semibold">
+                    👔 Vista de empresa
+                </span>
+            {% else %}
+                <a href="{% url 'login' %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300">
+                    Iniciar sesión para postularse
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'lista_empleos' %}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold transition duration-300 flex items-center gap-2">
+                ← Volver a empleos
+            </a>
         </div>
-
-        <button class="mt-8 bg-green-600 text-white px-6 py-3 rounded-lg">
-            Aplicar Ahora
-        </button>
-
     </div>
 
-</div>
+    <!-- Detalles de la vacante -->
+    <div class="grid md:grid-cols-3 gap-6">
+        
+        <!-- Columna principal -->
+        <div class="md:col-span-2 space-y-6">
+            
+            <!-- Descripción -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Descripción del Puesto</h2>
+                <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ vacante.descripcion }}</p>
+            </div>
+
+            <!-- Requisitos -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Requisitos</h2>
+                <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ vacante.requisitos }}</p>
+            </div>
+
+            <!-- Experiencia -->
+            {% if vacante.experiencia %}
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Experiencia Requerida</h2>
+                    <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ vacante.experiencia }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Columna lateral -->
+        <div class="space-y-6">
+            
+            <!-- Resumen -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Resumen</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3">
+                        <span class="text-gray-500 text-lg">📍</span>
+                        <div>
+                            <p class="text-sm text-gray-500">Ubicación</p>
+                            <p class="font-medium text-gray-800">{{ vacante.ubicacion }}</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-gray-500 text-lg">📅</span>
+                        <div>
+                            <p class="text-sm text-gray-500">Fecha límite</p>
+                            <p class="font-medium text-gray-800">{{ vacante.fecha_limite|date:"d M Y" }}</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-gray-500 text-lg">🕐</span>
+                        <div>
+                            <p class="text-sm text-gray-500">Tipo de contrato</p>
+                            <p class="font-medium text-gray-800">{{ vacante.get_tipo_contrato_display }}</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-gray-500 text-lg">📊</span>
+                        <div>
+                            <p class="text-sm text-gray-500">Nivel de experiencia</p>
+                            <p class="font-medium text-gray-800">{{ vacante.get_nivel_experiencia_display }}</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-gray-500 text-lg">👥</span>
+                        <div>
+                            <p class="text-sm text-gray-500">Vacantes</p>
+                            <p class="font-medium text-gray-800">{{ vacante.numero_vacantes }}</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Información de la empresa -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Sobre la Empresa</h3>
+                <p class="font-semibold text-lg text-gray-800 mb-2">{{ vacante.empresa.nombre }}</p>
+                {% if vacante.empresa.descripcion %}
+                    <p class="text-gray-600 text-sm">{{ vacante.empresa.descripcion|truncatewords:30 }}</p>
+                {% endif %}
+                {% if vacante.empresa.sitio_web %}
+                    <a href="{{ vacante.empresa.sitio_web }}" target="_blank" 
+                       class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">
+                        🌐 Visitar sitio web
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+</section>
 {% endblock %}

@@ -35,7 +35,8 @@
                         Panel Empresa
                     </a>
                 {% else %}
-                    <a href="#" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition">
+                    <a href="{% url 'mis_postulaciones' %}" class="hover:text-blue-200 transition">Mis Postulaciones</a>
+                    <a href="{% url 'perfil_candidato_editar' %}" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition">
                         Mi Perfil
                     </a>
                 {% endif %}

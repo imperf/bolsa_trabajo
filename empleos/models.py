@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 
 # =========================
@@ -38,10 +39,33 @@ class Vacante(models.Model):
         ('CERRADA', 'Cerrada'),
     ]
 
+    TIPOS_CONTRATO = [
+        ('TIEMPO_COMPLETO', 'Tiempo Completo'),
+        ('MEDIO_TIEMPO', 'Medio Tiempo'),
+        ('TEMPORAL', 'Temporal'),
+        ('PRACTICAS', 'Prácticas'),
+        ('PROYECTO', 'Por Proyecto'),
+    ]
+
+    NIVELES_EXPERIENCIA = [
+        ('SIN_EXPERIENCIA', 'Sin experiencia'),
+        ('JUNIOR', 'Junior (1-2 años)'),
+        ('MID_LEVEL', 'Mid-Level (3-5 años)'),
+        ('SENIOR', 'Senior (5-8 años)'),
+        ('EXPERT', 'Expert (+8 años)'),
+    ]
+
     titulo = models.CharField(max_length=200)
     empresa = models.ForeignKey(
         Empresa,
         on_delete=models.CASCADE
+    )
+    creado_por_usuario = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='vacantes_creadas'
     )
     categoria = models.ForeignKey(
         Categoria,
@@ -50,6 +74,12 @@ class Vacante(models.Model):
     )
     descripcion = models.TextField()
     requisitos = models.TextField()
+    experiencia = models.TextField(blank=True, default='')
+    nivel_experiencia = models.CharField(
+        max_length=20,
+        choices=NIVELES_EXPERIENCIA,
+        default='SIN_EXPERIENCIA'
+    )
     salario = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -57,6 +87,12 @@ class Vacante(models.Model):
         blank=True
     )
     ubicacion = models.CharField(max_length=150)
+    tipo_contrato = models.CharField(
+        max_length=20,
+        choices=TIPOS_CONTRATO,
+        default='TIEMPO_COMPLETO'
+    )
+    numero_vacantes = models.PositiveIntegerField(default=1)
     estado = models.CharField(
         max_length=20,
         choices=ESTADOS,
@@ -100,6 +136,8 @@ class Candidato(models.Model):
 class Postulacion(models.Model):
     ESTADOS = [
         ('PENDIENTE', 'Pendiente'),
+        ('EN_REVISION', 'En Revisión'),
+        ('PRESELECCION', 'Preselección'),
         ('ACEPTADO', 'Aceptado'),
         ('RECHAZADO', 'Rechazado'),
     ]

@@ -17,8 +17,13 @@
 
             <nav class="space-y-4">
                 <a href="{% url 'dashboard' %}" class="block bg-blue-700 p-3 rounded-xl hover:bg-blue-600 transition">📊 Dashboard</a>
-                <a href="{% url 'lista_empleos' %}" class="block p-3 rounded-xl hover:bg-blue-700 transition">💼 Mis Empleos</a>
-                <a href="#" class="block p-3 rounded-xl hover:bg-blue-700 transition">🏢 Empresas</a>
+                {% if user.perfil.tipo_usuario == 'empresa' %}
+                    <a href="{% url 'mis_empleos' %}" class="block p-3 rounded-xl hover:bg-blue-700 transition">💼 Mis Empleos</a>
+                    <a href="{% url 'publicar_empleo' %}" class="block p-3 rounded-xl hover:bg-blue-700 transition">➕ Publicar Empleo</a>
+                {% else %}
+                    <a href="{% url 'lista_empleos' %}" class="block p-3 rounded-xl hover:bg-blue-700 transition">💼 Ver Empleos</a>
+                {% endif %}
+                <a href="{% url 'empresas' %}" class="block p-3 rounded-xl hover:bg-blue-700 transition">🏢 Empresas</a>
                 <a href="{% url 'inicio' %}" class="block p-3 rounded-xl hover:bg-blue-700 transition">🏠 Volver al Inicio</a>
                 <hr class="border-blue-700 my-4">
                 <form action="{% url 'logout' %}" method="POST">

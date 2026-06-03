@@ -1,0 +1,95 @@
+{% extends 'empleos/base.html' %}
+
+{% block title %}Mis Postulaciones - Bolsa de Trabajo{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-12 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        
+        <div class="mb-8 border-b border-gray-100 pb-4">
+            <h2 class="text-3xl font-bold text-gray-800">Mis Postulaciones</h2>
+            <p class="text-gray-500 mt-2">Revisa el estado de todas tus postulaciones.</p>
+        </div>
+
+        {% if postulaciones %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 rounded-lg">
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700 rounded-tl-lg">Oferta</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Empresa</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Ubicación</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Tipo Contrato</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Fecha Postulación</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for postulacion in postulaciones %}
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="py-4 px-4">
+                                    <a href="{% url 'detalle_empleo' postulacion.vacante.id %}" class="font-bold text-blue-600 hover:text-blue-800">
+                                        {{ postulacion.vacante.titulo }}
+                                    </a>
+                                    <div class="text-sm text-gray-500">{{ postulacion.vacante.empresa.nombre }}</div>
+                                </td>
+                                <td class="py-4 px-4 text-gray-600">{{ postulacion.vacante.empresa.nombre }}</td>
+                                <td class="py-4 px-4 text-gray-600">{{ postulacion.vacante.ubicacion }}</td>
+                                <td class="py-4 px-4">
+                                    <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">
+                                        {{ postulacion.vacante.get_tipo_contrato_display }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm text-gray-600">{{ postulacion.fecha_postulacion|date:"d M Y" }}</div>
+                                    <div class="text-xs text-gray-400">{{ postulacion.fecha_postulacion|time:"H:i" }}</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    {% if postulacion.estado == 'PENDIENTE' %}
+                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded-full">⏳ Pendiente</span>
+                                    {% elif postulacion.estado == 'EN_REVISION' %}
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">🔍 En Revisión</span>
+                                    {% elif postulacion.estado == 'PRESELECCION' %}
+                                        <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">⭐ Preselección</span>
+                                    {% elif postulacion.estado == 'ACEPTADO' %}
+                                        <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">✓ Aceptado</span>
+                                    {% else %}
+                                        <span class="bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full">✗ Rechazado</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Leyenda de estados -->
+            <div class="mt-6 p-4 bg-gray-50 rounded-xl">
+                <h4 class="font-semibold text-gray-700 mb-2">Leyenda de estados:</h4>
+                <div class="flex flex-wrap gap-4 text-sm">
+                    <span class="flex items-center gap-1"><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">⏳ Pendiente</span> - Tu postulación fue recibida</span>
+                    <span class="flex items-center gap-1"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">🔍 En Revisión</span> - Está siendo evaluada</span>
+                    <span class="flex items-center gap-1"><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">⭐ Preselección</span> - Fuiste preseleccionado</span>
+                    <span class="flex items-center gap-1"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full">✓ Aceptado</span> - Fuiste aceptado</span>
+                    <span class="flex items-center gap-1"><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full">✗ Rechazado</span> - No fuiste seleccionado</span>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">No tienes postulaciones</h3>
+                <p class="text-gray-500 mb-6">Comienza a postularte a ofertas de empleo que te interesen</p>
+                <a href="{% url 'lista_empleos' %}" class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-xl font-bold shadow-lg hover:shadow-xl transition duration-300 inline-flex items-center gap-2">
+                    🔍 Ver Ofertas Disponibles
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

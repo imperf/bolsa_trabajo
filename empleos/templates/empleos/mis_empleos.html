@@ -1,0 +1,108 @@
+{% extends 'empleos/base.html' %}
+
+{% block title %}Mis Empleos - Bolsa de Trabajo{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-12 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        
+        <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800">Mis Ofertas Publicadas</h2>
+                <p class="text-gray-500 mt-2">Gestiona las ofertas de empleo de {{ empresa.nombre }}</p>
+            </div>
+            <a
+                href="{% url 'publicar_empleo' %}"
+                class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold shadow-lg hover:shadow-xl transition duration-300 flex items-center gap-2">
+                ➕ Publicar Nuevo Empleo
+            </a>
+        </div>
+
+        {% if vacantes %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 rounded-lg">
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700 rounded-tl-lg">Título</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Ubicación</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Categoría</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Vacantes</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Estado</th>
+                            <th class="text-left py-4 px-4 font-semibold text-gray-700">Fecha Límite</th>
+                            <th class="text-center py-4 px-4 font-semibold text-gray-700 rounded-tr-lg">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vacante in vacantes %}
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="py-4 px-4">
+                                    <div class="font-bold text-gray-800">{{ vacante.titulo }}</div>
+                                    <div class="text-sm text-gray-500">{{ vacante.fecha_publicacion|date:"d M Y" }}</div>
+                                </td>
+                                <td class="py-4 px-4 text-gray-600">{{ vacante.ubicacion }}</td>
+                                <td class="py-4 px-4">
+                                    {% if vacante.categoria %}
+                                        <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+                                            {{ vacante.categoria.nombre }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-gray-500">Sin categoría</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4 px-4 text-gray-600">{{ vacante.numero_vacantes }}</td>
+                                <td class="py-4 px-4">
+                                    {% if vacante.estado == 'ACTIVA' %}
+                                        <span class="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
+                                            {{ vacante.get_estado_display }}
+                                        </span>
+                                    {% else %}
+                                        <span class="bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">
+                                            {{ vacante.get_estado_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4 px-4 text-gray-600">{{ vacante.fecha_limite|date:"d M Y" }}</td>
+                                <td class="py-4 px-4">
+                                    <div class="flex justify-center gap-2">
+                                        <a
+                                            href="{% url 'postulaciones_vacante' vacante.id %}"
+                                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition text-sm flex items-center gap-1">
+                                            📋 Postulaciones
+                                        </a>
+                                        <a
+                                            href="{% url 'editar_empleo' vacante.id %}"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition text-sm flex items-center gap-1">
+                                            ✏️ Editar
+                                        </a>
+                                        <a
+                                            href="{% url 'eliminar_empleo' vacante.id %}"
+                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition text-sm flex items-center gap-1">
+                                            🗑️ Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">No tienes ofertas publicadas</h3>
+                <p class="text-gray-500 mb-6">Comienza publicando tu primera oferta de empleo</p>
+                <a
+                    href="{% url 'publicar_empleo' %}"
+                    class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-xl font-bold shadow-lg hover:shadow-xl transition duration-300 inline-flex items-center gap-2">
+                    ➕ Publicar Primer Empleo
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

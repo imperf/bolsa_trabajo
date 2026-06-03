@@ -1,0 +1,125 @@
+{% extends 'empleos/base.html' %}
+
+{% block title %}Mi Perfil - Bolsa de Trabajo{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-12 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        
+        <div class="mb-8 border-b border-gray-100 pb-4">
+            <h2 class="text-3xl font-bold text-gray-800">Mi Perfil</h2>
+            <p class="text-gray-500 mt-2">Actualiza tu información personal y profesional.</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Información Personal -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">👤 Información Personal</h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 font-semibold mb-2">Nombre Completo</label>
+                        <input
+                            type="text"
+                            name="first_name"
+                            value="{{ candidato.user.first_name }}"
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value="{{ candidato.user.email }}"
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Teléfono</label>
+                        <input
+                            type="text"
+                            name="telefono"
+                            value="{{ candidato.telefono }}"
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">DUI</label>
+                        <input
+                            type="text"
+                            name="dui"
+                            value="{{ candidato.dui }}"
+                            placeholder="00000000-0"
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Dirección</label>
+                        <input
+                            type="text"
+                            name="direccion"
+                            value="{{ candidato.direccion }}"
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Profesional -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">💼 Información Profesional</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Área de Interés</label>
+                        <input
+                            type="text"
+                            name="area_interes"
+                            value="{{ candidato.area_interes }}"
+                            placeholder="Ej: Desarrollo Web, Marketing, Contabilidad..."
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Experiencia</label>
+                        <textarea
+                            name="experiencia"
+                            rows="4"
+                            placeholder="Describe tu experiencia laboral..."
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">{{ candidato.experiencia }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Estudios</label>
+                        <textarea
+                            name="estudios"
+                            rows="3"
+                            placeholder="Describe tu formación académica..."
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">{{ candidato.estudios }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Habilidades</label>
+                        <textarea
+                            name="habilidades"
+                            rows="3"
+                            placeholder="Ej: JavaScript, Python, Comunicación efectiva, Liderazgo..."
+                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">{{ candidato.habilidades }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button
+                    type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300">
+                    💾 Guardar Cambios
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

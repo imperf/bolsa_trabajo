@@ -1,0 +1,84 @@
+{% extends 'empleos/base.html' %}
+
+{% block title %}Postularse - {{ vacante.titulo }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-12 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        
+        <div class="mb-8 border-b border-gray-100 pb-4">
+            <h2 class="text-3xl font-bold text-gray-800">Postularse a la Oferta</h2>
+            <p class="text-gray-500 mt-2">Completa tu postulación para la siguiente vacante.</p>
+        </div>
+
+        <!-- Información de la vacante -->
+        <div class="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-100">
+            <h3 class="text-xl font-bold text-blue-800">{{ vacante.titulo }}</h3>
+            <p class="text-blue-600 mt-1">{{ vacante.empresa.nombre }}</p>
+            <div class="flex flex-wrap gap-2 mt-3">
+                <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                    📍 {{ vacante.ubicacion }}
+                </span>
+                <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">
+                    {{ vacante.get_tipo_contrato_display }}
+                </span>
+                {% if vacante.salario %}
+                    <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">
+                        ${{ vacante.salario }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Información del candidato -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <h4 class="font-semibold text-gray-800 mb-3">Tu Información</h4>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-500">Nombre:</span>
+                    <span class="font-medium text-gray-800 ml-2">{{ candidato.user.first_name|default:candidato.user.username }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500">Email:</span>
+                    <span class="font-medium text-gray-800 ml-2">{{ candidato.user.email }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500">Teléfono:</span>
+                    <span class="font-medium text-gray-800 ml-2">{{ candidato.telefono }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500">Área de Interés:</span>
+                    <span class="font-medium text-gray-800 ml-2">{{ candidato.area_interes|default:"No especificado" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-gray-700 font-semibold mb-2">Mensaje para el reclutador (Opcional)</label>
+                <textarea
+                    name="mensaje"
+                    rows="4"
+                    placeholder="Escribe un mensaje breve explicando por qué eres un buen candidato para esta posición..."
+                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button
+                    type="submit"
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300">
+                    📤 Enviar Postulación
+                </button>
+                <a
+                    href="{% url 'detalle_empleo' vacante.id %}"
+                    class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300 text-center">
+                    ← Cancelar
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

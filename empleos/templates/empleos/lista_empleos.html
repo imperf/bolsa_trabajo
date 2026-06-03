@@ -9,52 +9,144 @@
         Empleos Disponibles
     </h2>
 
+    <!-- Filtros de búsqueda -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🔍 Filtrar Búsqueda</h3>
+        <form method="GET" action="{% url 'lista_empleos' %}">
+            <div class="grid md:grid-cols-4 gap-4">
+                <!-- Filtro por Área Profesional (Categoría) -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2 text-sm">Área Profesional</label>
+                    <select name="categoria" class="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option value="">Todas las áreas</option>
+                        {% for cat in categorias %}
+                            <option value="{{ cat.id }}" {% if filtro_categoria == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Filtro por Ubicación -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2 text-sm">Ubicación</label>
+                    <select name="ubicacion" class="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option value="">Todas las ubicaciones</option>
+                        {% for ubic in ubicaciones %}
+                            <option value="{{ ubic }}" {% if filtro_ubicacion == ubic %}selected{% endif %}>{{ ubic }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Filtro por Tipo de Trabajo -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2 text-sm">Tipo de Trabajo</label>
+                    <select name="tipo_contrato" class="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option value="">Todos los tipos</option>
+                        <option value="TIEMPO_COMPLETO" {% if filtro_tipo_contrato == 'TIEMPO_COMPLETO' %}selected{% endif %}>Tiempo Completo</option>
+                        <option value="MEDIO_TIEMPO" {% if filtro_tipo_contrato == 'MEDIO_TIEMPO' %}selected{% endif %}>Medio Tiempo</option>
+                        <option value="TEMPORAL" {% if filtro_tipo_contrato == 'TEMPORAL' %}selected{% endif %}>Temporal</option>
+                        <option value="PRACTICAS" {% if filtro_tipo_contrato == 'PRACTICAS' %}selected{% endif %}>Prácticas</option>
+                        <option value="PROYECTO" {% if filtro_tipo_contrato == 'PROYECTO' %}selected{% endif %}>Por Proyecto</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Nivel de Experiencia -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2 text-sm">Nivel de Experiencia</label>
+                    <select name="nivel_experiencia" class="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option value="">Todos los niveles</option>
+                        <option value="SIN_EXPERIENCIA" {% if filtro_nivel_experiencia == 'SIN_EXPERIENCIA' %}selected{% endif %}>Sin experiencia</option>
+                        <option value="JUNIOR" {% if filtro_nivel_experiencia == 'JUNIOR' %}selected{% endif %}>Junior (1-2 años)</option>
+                        <option value="MID_LEVEL" {% if filtro_nivel_experiencia == 'MID_LEVEL' %}selected{% endif %}>Mid-Level (3-5 años)</option>
+                        <option value="SENIOR" {% if filtro_nivel_experiencia == 'SENIOR' %}selected{% endif %}>Senior (5-8 años)</option>
+                        <option value="EXPERT" {% if filtro_nivel_experiencia == 'EXPERT' %}selected{% endif %}>Expert (+8 años)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 flex gap-3">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-semibold transition duration-300 flex items-center gap-2">
+                    🔍 Buscar
+                </button>
+                <a href="{% url 'lista_empleos' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-lg font-semibold transition duration-300 flex items-center gap-2">
+                    🔄 Limpiar Filtros
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Resultados de la búsqueda -->
+    {% if filtro_categoria or filtro_ubicacion or filtro_tipo_contrato or filtro_nivel_experiencia %}
+        <div class="mb-4 text-gray-600">
+            <span class="font-semibold">Resultados:</span> {{ vacantes.count }} empleo{{ vacantes.count|pluralize }} encontrado{{ vacantes.count|pluralize }}
+        </div>
+    {% endif %}
+
     <div class="grid md:grid-cols-3 gap-6">
 
         {% for vacante in vacantes %}
 
-        <div class="bg-white rounded-xl shadow p-5">
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
 
             <h3 class="text-2xl font-bold text-blue-700">
                 {{ vacante.titulo }}
             </h3>
 
-            <p class="text-gray-500 mt-2">
+            <p class="text-gray-500 mt-2 font-medium">
                 {{ vacante.empresa.nombre }}
             </p>
 
-            <p class="mt-4 text-gray-600">
-                {{ vacante.descripcion }}
+            <!-- Etiquetas de información -->
+            <div class="flex flex-wrap gap-2 mt-3">
+                {% if vacante.categoria %}
+                    <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                        {{ vacante.categoria.nombre }}
+                    </span>
+                {% endif %}
+                <span class="bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full">
+                    📍 {{ vacante.ubicacion }}
+                </span>
+                <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">
+                    {{ vacante.get_tipo_contrato_display }}
+                </span>
+                <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">
+                    {{ vacante.get_nivel_experiencia_display }}
+                </span>
+            </div>
+
+            <p class="mt-4 text-gray-600 line-clamp-3">
+                {{ vacante.descripcion|truncatewords:30 }}
             </p>
 
             <p class="mt-3 font-semibold text-green-600">
-                ${{ vacante.salario }}
+                {% if vacante.salario %}
+                    ${{ vacante.salario }}
+                {% else %}
+                    Salario a convenir
+                {% endif %}
             </p>
 
-            <p class="text-sm text-gray-400 mt-2">
-                {{ vacante.ubicacion }}
-            </p>
+            <div class="flex justify-between items-center mt-4 text-sm text-gray-500">
+                <span>📅 Límite: {{ vacante.fecha_limite|date:"d M Y" }}</span>
+                <span>👥 {{ vacante.numero_vacantes }} vacante{{ vacante.numero_vacantes|pluralize }}</span>
+            </div>
 
-            <p class="text-sm text-gray-400">
-                Fecha límite:
-                {{ vacante.fecha_limite }}
-            </p>
-
-            <a href="/detalle/"
-               class="mt-5 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg">
-               Ver Detalle
+            <a href="{% url 'detalle_empleo' vacante.id %}"
+               class="mt-5 inline-block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold transition duration-300">
+               Ver Detalle →
             </a>
 
         </div>
 
         {% empty %}
 
-        <div class="col-span-3 text-center">
-
-            <p class="text-gray-500 text-xl">
-                No hay vacantes disponibles.
-            </p>
-
+        <div class="col-span-3 text-center py-16">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <p class="text-gray-500 text-xl mb-2">No se encontraron vacantes</p>
+            <p class="text-gray-400">Intenta ajustar los filtros de búsqueda</p>
         </div>
 
         {% endfor %}

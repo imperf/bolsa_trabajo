@@ -1,14 +1,14 @@
 {% extends 'empleos/base.html' %}
 
-{% block title %}Publicar Empleo - Bolsa de Trabajo{% endblock %}
+{% block title %}Editar Empleo - Bolsa de Trabajo{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto py-12 px-4">
     <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
         
         <div class="mb-8 border-b border-gray-100 pb-4">
-            <h2 class="text-3xl font-bold text-gray-800">Publicar Nuevo Empleo</h2>
-            <p class="text-gray-500 mt-2">Completa la información requerida para la vacante laboral.</p>
+            <h2 class="text-3xl font-bold text-gray-800">Editar Oferta de Empleo</h2>
+            <p class="text-gray-500 mt-2">Modifica la información de la vacante laboral.</p>
         </div>
 
         <form method="POST" class="space-y-6">
@@ -19,7 +19,7 @@
                 <input
                     type="text"
                     name="titulo" 
-                    placeholder="Ej: Desarrollador Frontend"
+                    value="{{ vacante.titulo }}"
                     class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
                     required>
             </div>
@@ -30,7 +30,7 @@
                     <input
                         type="text"
                         name="ubicacion"
-                        placeholder="Ej: San Salvador"
+                        value="{{ vacante.ubicacion }}"
                         class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
                         required>
                 </div>
@@ -40,6 +40,7 @@
                     <input
                         type="date"
                         name="fecha_limite"
+                        value="{{ vacante.fecha_limite|date:'Y-m-d' }}"
                         class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
                         required>
                 </div>
@@ -50,11 +51,10 @@
                     <label class="block text-gray-700 font-semibold mb-2">Categoría</label>
                     <select
                         name="categoria"
-                        class="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
-                        required>
-                        <option value="" selected disabled>Selecciona...</option>
+                        class="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <option value="">Sin categoría</option>
                         {% for cat in categorias %}
-                            <option value="{{ cat.id }}">{{ cat.nombre }}</option>
+                            <option value="{{ cat.id }}" {% if vacante.categoria.id == cat.id %}selected{% endif %}>{{ cat.nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -64,11 +64,11 @@
                     <select
                         name="tipo_contrato"
                         class="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                        <option value="TIEMPO_COMPLETO" selected>Tiempo Completo</option>
-                        <option value="MEDIO_TIEMPO">Medio Tiempo</option>
-                        <option value="TEMPORAL">Temporal</option>
-                        <option value="PRACTICAS">Prácticas</option>
-                        <option value="PROYECTO">Por Proyecto</option>
+                        <option value="TIEMPO_COMPLETO" {% if vacante.tipo_contrato == 'TIEMPO_COMPLETO' %}selected{% endif %}>Tiempo Completo</option>
+                        <option value="MEDIO_TIEMPO" {% if vacante.tipo_contrato == 'MEDIO_TIEMPO' %}selected{% endif %}>Medio Tiempo</option>
+                        <option value="TEMPORAL" {% if vacante.tipo_contrato == 'TEMPORAL' %}selected{% endif %}>Temporal</option>
+                        <option value="PRACTICAS" {% if vacante.tipo_contrato == 'PRACTICAS' %}selected{% endif %}>Prácticas</option>
+                        <option value="PROYECTO" {% if vacante.tipo_contrato == 'PROYECTO' %}selected{% endif %}>Por Proyecto</option>
                     </select>
                 </div>
 
@@ -77,11 +77,11 @@
                     <select
                         name="nivel_experiencia"
                         class="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                        <option value="SIN_EXPERIENCIA" selected>Sin experiencia</option>
-                        <option value="JUNIOR">Junior (1-2 años)</option>
-                        <option value="MID_LEVEL">Mid-Level (3-5 años)</option>
-                        <option value="SENIOR">Senior (5-8 años)</option>
-                        <option value="EXPERT">Expert (+8 años)</option>
+                        <option value="SIN_EXPERIENCIA" {% if vacante.nivel_experiencia == 'SIN_EXPERIENCIA' %}selected{% endif %}>Sin experiencia</option>
+                        <option value="JUNIOR" {% if vacante.nivel_experiencia == 'JUNIOR' %}selected{% endif %}>Junior (1-2 años)</option>
+                        <option value="MID_LEVEL" {% if vacante.nivel_experiencia == 'MID_LEVEL' %}selected{% endif %}>Mid-Level (3-5 años)</option>
+                        <option value="SENIOR" {% if vacante.nivel_experiencia == 'SENIOR' %}selected{% endif %}>Senior (5-8 años)</option>
+                        <option value="EXPERT" {% if vacante.nivel_experiencia == 'EXPERT' %}selected{% endif %}>Expert (+8 años)</option>
                     </select>
                 </div>
             </div>
@@ -97,6 +97,7 @@
                             type="number"
                             step="0.01"
                             name="salario"
+                            value="{{ vacante.salario|default:'' }}"
                             placeholder="800.00"
                             class="w-full border border-gray-300 rounded-xl pl-8 pr-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     </div>
@@ -108,7 +109,7 @@
                         type="number"
                         name="numero_vacantes"
                         min="1"
-                        value="1"
+                        value="{{ vacante.numero_vacantes|default:1 }}"
                         class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                 </div>
             </div>
@@ -118,9 +119,8 @@
                 <textarea
                     name="descripcion"
                     rows="5"
-                    placeholder="Describe las responsabilidades, beneficios y detalles del puesto..."
                     class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
-                    required></textarea>
+                    required>{{ vacante.descripcion }}</textarea>
             </div>
 
             <div>
@@ -128,9 +128,8 @@
                 <textarea
                     name="requisitos"
                     rows="4"
-                    placeholder="Lista de requisitos mínimos para el puesto (educación, certificaciones, etc.)..."
                     class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
-                    required></textarea>
+                    required>{{ vacante.requisitos }}</textarea>
             </div>
 
             <div>
@@ -138,16 +137,20 @@
                 <textarea
                     name="experiencia"
                     rows="3"
-                    placeholder="Describe la experiencia laboral requerida (años, tipo de experiencia, etc.)..."
-                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">{{ vacante.experiencia }}</textarea>
             </div>
 
-            <div class="pt-4">
+            <div class="flex gap-4 pt-4">
                 <button
                     type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300 transform active:scale-98">
-                    🚀 Publicar Oferta Laboral
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300 transform active:scale-98">
+                    💾 Guardar Cambios
                 </button>
+                <a
+                    href="{% url 'mis_empleos' %}"
+                    class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition duration-300 text-center">
+                    ❌ Cancelar
+                </a>
             </div>
         </form>
 

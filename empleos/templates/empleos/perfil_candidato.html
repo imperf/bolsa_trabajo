@@ -1,0 +1,81 @@
+{% extends 'empleos/base.html' %}
+
+{% block title %}Perfil de Candidato - Bolsa de Trabajo{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-12 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        
+        <div class="mb-8 border-b border-gray-100 pb-4">
+            <a href="javascript:history.back()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2 mb-4">
+                ← Volver
+            </a>
+            <h2 class="text-3xl font-bold text-gray-800">Perfil del Candidato</h2>
+        </div>
+
+        <!-- Información Personal -->
+        <div class="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-100">
+            <div class="flex items-start gap-4">
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                    {{ candidato.user.first_name|first|default:candidato.user.username|first }}
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">{{ candidato.user.first_name }} {{ candidato.user.last_name }}</h3>
+                    <p class="text-blue-600 font-medium">{{ candidato.user.email }}</p>
+                    {% if candidato.area_interes %}
+                        <span class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full mt-2">
+                            {{ candidato.area_interes }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <h4 class="text-lg font-bold text-gray-800 mb-4">📞 Información de Contacto</h4>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <span class="text-gray-500 text-sm">Teléfono</span>
+                    <p class="font-medium text-gray-800">{{ candidato.telefono }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500 text-sm">Dirección</span>
+                    <p class="font-medium text-gray-800">{{ candidato.direccion|default:"No especificada" }}</p>
+                </div>
+                {% if candidato.dui %}
+                    <div>
+                        <span class="text-gray-500 text-sm">DUI</span>
+                        <p class="font-medium text-gray-800">{{ candidato.dui }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Experiencia -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <h4 class="text-lg font-bold text-gray-800 mb-4">💼 Experiencia Laboral</h4>
+            <p class="text-gray-700 leading-relaxed whitespace-pre-line">
+                {{ candidato.experiencia|default:"No especificada" }}
+            </p>
+        </div>
+
+        <!-- Estudios -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <h4 class="text-lg font-bold text-gray-800 mb-4">🎓 Estudios</h4>
+            <p class="text-gray-700 leading-relaxed whitespace-pre-line">
+                {{ candidato.estudios|default:"No especificados" }}
+            </p>
+        </div>
+
+        <!-- Habilidades -->
+        <div class="bg-gray-50 rounded-xl p-6">
+            <h4 class="text-lg font-bold text-gray-800 mb-4">💡 Habilidades</h4>
+            <p class="text-gray-700 leading-relaxed whitespace-pre-line">
+                {{ candidato.habilidades|default:"No especificadas" }}
+            </p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
