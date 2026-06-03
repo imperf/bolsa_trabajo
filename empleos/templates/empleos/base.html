@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bolsa de Trabajo{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-lg">
+        <a href="{% url 'inicio' %}" class="text-2xl font-bold hover:text-blue-200 transition">
+            Bolsa de Trabajo
+        </a>
+
+        <div class="flex items-center space-x-6">
+            {% if user.is_authenticated %}
+                <!-- User is logged in -->
+                <span class="text-sm text-blue-200">
+                    {% if user.perfil.tipo_usuario == 'empresa' %}
+                        🏢 {{ user.first_name|default:user.username }}
+                    {% else %}
+                        👤 {{ user.first_name|default:user.username }}
+                    {% endif %}
+                </span>
+
+                <a href="{% url 'lista_empleos' %}" class="hover:text-blue-200 transition">Empleos</a>
+                <a href="{% url 'empresas' %}" class="hover:text-blue-200 transition">Empresas</a>
+
+                {% if user.perfil.tipo_usuario == 'empresa' %}
+                    <a href="{% url 'dashboard' %}" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition">
+                        Panel Empresa
+                    </a>
+                {% else %}
+                    <a href="#" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition">
+                        Mi Perfil
+                    </a>
+                {% endif %}
+
+                <form action="{% url 'logout' %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="hover:text-red-300 transition text-sm">
+                        Cerrar Sesión
+                    </button>
+                </form>
+            {% else %}
+                <!-- User is not logged in -->
+                <a href="{% url 'lista_empleos' %}" class="hover:text-blue-200 transition">Empleos</a>
+                <a href="{% url 'empresas' %}" class="hover:text-blue-200 transition">Empresas</a>
+                <a href="{% url 'login' %}" class="hover:text-blue-200 transition">Iniciar Sesión</a>
+                <a href="{% url 'registro' %}" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition">
+                    Registrarse
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-6 mt-10">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2026 Bolsa de Trabajo. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

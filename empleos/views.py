@@ -78,14 +78,10 @@ def registro(request):
             correo = request.POST.get('email')
             telefono = request.POST.get('telefono')
             experiencia = request.POST.get('experiencia', '')
-
-            # ⚠️ Estos campos existen en el formulario pero NO están en el modelo Django actual:
             dui = request.POST.get('dui', '')
             estudios = request.POST.get('estudios', '')
             habilidades = request.POST.get('habilidades', '')
             area_interes = request.POST.get('area_interes', '')
-
-            print(f"[DEBUG-CANDIDATO] DUI={dui}, Estudios={estudios}, Habilidades={habilidades}, AreaInteres={area_interes}")
 
             # Crear usuario usando Django ORM
             user = User.objects.create_user(
@@ -101,12 +97,16 @@ def registro(request):
                 tipo_usuario=tipo
             )
 
-            # Crear candidato (solo campos existentes en el modelo)
+            # Crear candidato con todos los campos
             Candidato.objects.create(
                 user=user,
                 telefono=telefono,
-                direccion='',  # placeholder, se puede editar después
-                experiencia=experiencia
+                direccion='',
+                experiencia=experiencia,
+                dui=dui,
+                estudios=estudios,
+                habilidades=habilidades,
+                area_interes=area_interes
             )
 
         elif tipo == 'empresa':
@@ -114,12 +114,8 @@ def registro(request):
             direccion = request.POST.get('direccion_empresa', '')
             telefono = request.POST.get('telefono_empresa')
             correo = request.POST.get('email_empresa')
-
-            # ⚠️ Estos campos existen en el formulario pero NO están en el modelo Django actual:
             sector = request.POST.get('sector', '')
             persona_contacto = request.POST.get('persona_contacto', '')
-
-            print(f"[DEBUG-EMPRESA] Sector={sector}, Contacto={persona_contacto}")
 
             # Crear usuario usando Django ORM
             user = User.objects.create_user(
@@ -135,13 +131,15 @@ def registro(request):
                 tipo_usuario=tipo
             )
 
-            # Crear empresa (solo campos existentes en el modelo)
+            # Crear empresa con todos los campos
             Empresa.objects.create(
                 nombre=nombre_empresa,
                 descripcion='',
                 direccion=direccion,
                 telefono=telefono,
-                correo=correo
+                correo=correo,
+                sector=sector,
+                persona_contacto=persona_contacto
             )
 
         else:

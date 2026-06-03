@@ -1,90 +1,67 @@
+{% extends 'empleos/base.html' %}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empresas - Bolsa de Trabajo</title>
-    <!-- Tailwind CSS vía CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+{% block title %}Empresas - Bolsa de Trabajo{% endblock %}
 
-<body class="bg-gray-100 min-h-screen">
+{% block content %}
+<section class="max-w-7xl mx-auto py-12 px-4">
 
-    <!-- Barra de Navegación -->
-    <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-md">
-        <h1 class="text-2xl font-bold">
-            Bolsa de Trabajo
-        </h1>
+    <div class="text-center mb-12">
+        <h2 class="text-5xl font-bold text-gray-800">
+            Empresas Asociadas
+        </h2>
 
-        <div class="space-x-4">
-            <a href="/" class="hover:underline">Inicio</a>
-            <a href="/empleos/" class="hover:underline">Empleos</a>
-            <a href="/login/" class="hover:underline">Login</a>
-        </div>
-    </nav>
+        <p class="text-gray-500 mt-4">
+            Descubre empresas que están contratando talento en El Salvador.
+        </p>
+    </div>
 
-    <!-- Sección Principal -->
-    <section class="max-w-7xl mx-auto py-12 px-4">
+    <!-- Grid Dinámico de Empresas -->
+    <div class="grid md:grid-cols-3 gap-8">
+        
+        {% for empresa in empresas %}
+        <!-- Tarjeta de Empresa Generada Dinámicamente -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
 
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-gray-800">
-                Empresas Asociadas
-            </h2>
+            <!-- Header de la tarjeta con color dinámico o iniciales -->
+            <div class="bg-blue-600 h-32 flex items-center justify-center">
+                <h3 class="text-4xl font-bold text-white">
+                    {# Toma las primeras dos letras del nombre de la empresa en mayúsculas #}
+                    {{ empresa.nombre|slice:":2"|upper }}
+                </h3>
+            </div>
 
-            <p class="text-gray-500 mt-4">
-                Descubre empresas que están contratando talento en El Salvador.
-            </p>
-        </div>
+            <div class="p-6">
+                <h3 class="text-2xl font-bold text-gray-800">
+                    {{ empresa.nombre }}
+                </h3>
 
-        <!-- Grid Dinámico de Empresas -->
-        <div class="grid md:grid-cols-3 gap-8">
-            
-            {% for empresa in empresas %}
-            <!-- Tarjeta de Empresa Generada Dinámicamente -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
+                <p class="text-gray-600 mt-2 line-clamp-3">
+                    {# Muestra la descripción o un texto por defecto si está vacía #}
+                    {{ empresa.descripcion|default:"Empresa comprometida con el desarrollo profesional." }}
+                </p>
 
-                <!-- Header de la tarjeta con color dinámico o iniciales -->
-                <div class="bg-blue-600 h-32 flex items-center justify-center">
-                    <h3 class="text-4xl font-bold text-white">
-                        {# Toma las primeras dos letras del nombre de la empresa en mayúsculas #}
-                        {{ empresa.nombre|slice:":2"|upper }}
-                    </h3>
-                </div>
+                <div class="mt-6 flex justify-between items-center">
+                    <span class="text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full text-sm">
+                        {{ empresa.vacante_set.count }} Vacantes
+                    </span>
 
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-gray-800">
-                        {{ empresa.nombre }}
-                    </h3>
-
-                    <p class="text-gray-600 mt-2 line-clamp-3">
-                        {# Muestra la descripción o un texto por defecto si está vacía #}
-                        {{ empresa.descripcion|default:"Empresa comprometida con el desarrollo profesional." }}
-                    </p>
-
-                    <div class="mt-6 flex justify-between items-center">
-                        <span class="text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full text-sm">
-                            {{ empresa.vacante_set.count }} Vacantes
-                        </span>
-
-                        <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            Ver Perfil
-                        </a>
-                    </div>
+                    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        Ver Perfil
+                    </a>
                 </div>
 
             </div>
-            {% empty %}
-            <!-- Mensaje en caso de que la base de datos esté vacía -->
-            <div class="col-span-3 text-center py-20">
-                <p class="text-2xl text-gray-400">No se encontraron empresas registradas en el sistema.</p>
-                <p class="text-gray-500">Agrega empresas desde el panel administrativo de Django.</p>
-            </div>
-            {% endfor %}
 
         </div>
+        {% empty %}
+        <!-- Mensaje en caso de que la base de datos esté vacía -->
+        <div class="col-span-3 text-center py-20">
+            <p class="text-2xl text-gray-400">No se encontraron empresas registradas en el sistema.</p>
+            <p class="text-gray-500">Agrega empresas desde el panel administrativo de Django.</p>
+        </div>
+        {% endfor %}
 
-    </section>
+    </div>
 
-</body>
-</html>
+</section>
+{% endblock %}

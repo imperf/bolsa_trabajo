@@ -1,37 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Bolsa de Trabajo</title>
+{% extends 'empleos/base.html' %}
 
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
+{% block title %}Inicio - Bolsa de Trabajo{% endblock %}
 
-    <nav class="bg-blue-700 text-white p-4 flex justify-between">
-        <h1 class="text-2xl font-bold">Bolsa de Trabajo</h1>
+{% block content %}
+<section class="text-center py-20 px-4">
+    <h2 class="text-5xl font-bold text-gray-800">
+        Encuentra el trabajo de tus sueños
+    </h2>
 
-        <div class="space-x-4">
-            <a href="/empleos/">Empleos</a>
-            <a href="/empresas/">Empresas</a>
-            <a href="/login/">Login</a>
-        </div>
-    </nav>
+    <p class="mt-4 text-gray-600 text-lg">
+        Miles de oportunidades laborales te esperan
+    </p>
 
-    <section class="text-center py-20">
-        <h2 class="text-5xl font-bold text-gray-800">
-            Encuentra el trabajo de tus sueños
-        </h2>
-
-        <p class="mt-4 text-gray-600">
-            Miles de oportunidades laborales
-        </p>
-
-        <a href="/empleos/"
-           class="bg-blue-600 text-white px-6 py-3 rounded-lg mt-6 inline-block">
+    <div class="mt-8 space-x-4">
+        <a href="{% url 'lista_empleos' %}"
+           class="bg-blue-600 text-white px-6 py-3 rounded-lg mt-6 inline-block hover:bg-blue-700 transition">
             Ver Empleos
         </a>
-    </section>
 
-</body>
-</html>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'registro' %}"
+           class="bg-green-600 text-white px-6 py-3 rounded-lg mt-6 inline-block hover:bg-green-700 transition">
+            Registrarse
+        </a>
+        {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="mt-8 p-6 bg-white rounded-lg shadow-md max-w-md mx-auto">
+        <h3 class="text-2xl font-bold text-gray-800">
+            ¡Hola, {{ user.first_name|default:user.username }}!
+        </h3>
+        <p class="text-gray-600 mt-2">
+            Tu tipo de cuenta es: <strong>{{ user.perfil.tipo_usuario|capfirst }}</strong>
+        </p>
+        {% if user.perfil.tipo_usuario == 'empresa' %}
+            <a href="{% url 'dashboard' %}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                Ir al Panel de Empresa
+            </a>
+        {% else %}
+            <a href="{% url 'lista_empleos' %}" class="mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                Ver Empleos Disponibles
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
