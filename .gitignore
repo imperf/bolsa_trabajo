@@ -6,3 +6,5 @@ varmenv/
 .venv/
 db.sqlite3
 .refact/
+db.sqlite3
+.refact/

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,75 +5,164 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+    </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
-    <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg">
+    <div class="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-lg">
 
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800">
                 Crear Cuenta
             </h1>
             <p class="text-gray-500 mt-2">
-                Regístrate para encontrar empleo
+                Regístrate para encontrar empleo o publicar vacantes
             </p>
         </div>
 
         <form method="POST" class="space-y-5" autocomplete="off">
             {% csrf_token %}
 
+            <!-- Tipo de Usuario -->
             <div>
-                <label class="block text-gray-700 mb-2">Nombre Completo</label>
-                <input
-                    type="text"
-                    name="nombre" 
-                    placeholder="Ingresa tu nombre"
-                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required>
-            </div>
-
-            <div>
-                <label class="block text-gray-700 mb-2">Usuario</label>
-                <input
-                    type="text"
-                    name="usuario"
-                    placeholder="Ingresa tu usuario"
-                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required>
-            </div>
-
-            <div>
-                <label class="block text-gray-700 mb-2">Correo Electrónico</label>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="correo@example.com"
-                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required>
-            </div>
-
-            <div>
-                <label class="block text-gray-700 mb-2">Contraseña</label>
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="********"
-                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Tipo de Usuario</label>
-                <select name="tipo_usuario" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                <label class="block text-gray-700 mb-2 font-semibold">Tipo de Usuario</label>
+                <select name="tipo_usuario" id="tipo_usuario"
+                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required>
                     <option value="" disabled selected>Seleccione una opción</option>
                     <option value="candidato">Candidato</option>
                     <option value="empresa">Empresa / Reclutador</option>
                 </select>
             </div>
 
-            <button
-                type="submit"
-                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition duration-300">
+            <!-- ============================================ -->
+            <!-- CAMPOS COMUNES -->
+            <!-- ============================================ -->
+            <div>
+                <label class="block text-gray-700 mb-2">Usuario</label>
+                <input type="text" name="usuario" placeholder="Nombre de usuario"
+                       class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       required>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 mb-2">Contraseña</label>
+                <input type="password" name="password" placeholder="********"
+                       class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       required>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- CAMPOS PARA CANDIDATO -->
+            <!-- ============================================ -->
+            <div id="campos-candidato" class="form-section space-y-5">
+                <hr class="border-t-2 border-green-200">
+                <h2 class="text-xl font-bold text-green-700">Datos del Candidato</h2>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Nombre Completo</label>
+                    <input type="text" name="nombre" placeholder="Ingresa tu nombre completo"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">DUI (Documento Único de Identidad)</label>
+                    <input type="text" name="dui" placeholder="00000000-0"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <p class="text-xs text-gray-400 mt-1">Campo no disponible en la base de datos actual</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Estudios / Nivel Académico</label>
+                    <input type="text" name="estudios" placeholder="Ej: Universidad, Técnico, etc."
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <p class="text-xs text-gray-400 mt-1">⚠️ Campo faltante en la base de datos actual</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Experiencia Laboral</label>
+                    <textarea name="experiencia" rows="3" placeholder="Describe tu experiencia laboral"
+                              class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Habilidades</label>
+                    <textarea name="habilidades" rows="2" placeholder="Ej: Python, Diseño Gráfico, Gestión de proyectos..."
+                              class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                    <p class="text-xs text-gray-400 mt-1">⚠️ Campo faltante en la base de datos actual</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Áreas de Interés (para recomendaciones)</label>
+                    <input type="text" name="area_interes" placeholder="Ej: Tecnología, Salud, Educación"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <p class="text-xs text-gray-400 mt-1">⚠️ Campo faltante en la base de datos actual</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Correo Electrónico</label>
+                    <input type="email" name="email" placeholder="correo@example.com"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Teléfono</label>
+                    <input type="text" name="telefono" placeholder="0000-0000"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- CAMPOS PARA EMPRESA -->
+            <!-- ============================================ -->
+            <div id="campos-empresa" class="form-section space-y-5">
+                <hr class="border-t-2 border-blue-200">
+                <h2 class="text-xl font-bold text-blue-700">Datos de la Empresa</h2>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Nombre de la Empresa</label>
+                    <input type="text" name="nombre_empresa" placeholder="Nombre comercial o razón social"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Giro / Sector</label>
+                    <input type="text" name="sector" placeholder="Ej: Tecnología, Salud, Comercio"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-gray-400 mt-1">⚠️ Campo faltante en la base de datos actual</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Dirección</label>
+                    <input type="text" name="direccion_empresa" placeholder="Dirección física"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Nombre de Persona de Contacto</label>
+                    <input type="text" name="persona_contacto" placeholder="Nombre del contacto"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-gray-400 mt-1">⚠️ Campo faltante en la base de datos actual</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Teléfono</label>
+                    <input type="text" name="telefono_empresa" placeholder="0000-0000"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2">Correo Electrónico</label>
+                    <input type="email" name="email_empresa" placeholder="empresa@example.com"
+                           class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition duration-300">
                 Registrarse
             </button>
         </form>
@@ -87,6 +175,45 @@
         </p>
 
     </div>
+
+    <script>
+        const tipoSelect = document.getElementById('tipo_usuario');
+        const camposCandidato = document.getElementById('campos-candidato');
+        const camposEmpresa = document.getElementById('campos-empresa');
+
+        function toggleFormFields() {
+            const tipo = tipoSelect.value;
+
+            camposCandidato.classList.remove('active');
+            camposEmpresa.classList.remove('active');
+
+            if (tipo === 'candidato') {
+                camposCandidato.classList.add('active');
+                setRequired(camposCandidato, true);
+                setRequired(camposEmpresa, false);
+            } else if (tipo === 'empresa') {
+                camposEmpresa.classList.add('active');
+                setRequired(camposCandidato, false);
+                setRequired(camposEmpresa, true);
+            }
+        }
+
+        function setRequired(container, required) {
+            const inputs = container.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (required) {
+                    input.setAttribute('required', '');
+                } else {
+                    input.removeAttribute('required');
+                }
+            });
+        }
+
+        tipoSelect.addEventListener('change', toggleFormFields);
+
+        // Initialize on page load if a value is preselected
+        toggleFormFields();
+    </script>
 
 </body>
 </html>

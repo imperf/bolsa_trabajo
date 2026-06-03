@@ -65,30 +65,93 @@ def login_view(request):
 
 def registro(request):
     from django.contrib.auth.models import User
+    from .models import Candidato, Empresa
 
     if request.method == 'POST':
-        nombre_completo = request.POST.get('nombre')
         usuario = request.POST.get('usuario')
-        correo = request.POST.get('email')
         clave = request.POST.get('password')
         tipo = request.POST.get('tipo_usuario')  # 'empresa' or 'candidato'
-        
-        # Crear usuario usando Django ORM
-        user = User.objects.create_user(
-            username=usuario,
-            email=correo,
-            password=clave,
-            first_name=nombre_completo
-        )
-        
-        # Crear perfil asociado
-        Perfil.objects.create(
-            usuario=user,
-            tipo_usuario=tipo
-        )
-        
+
+        # Datos específicos según tipo de usuario
+        if tipo == 'candidato':
+            nombre_completo = request.POST.get('nombre')
+            correo = request.POST.get('email')
+            telefono = request.POST.get('telefono')
+            experiencia = request.POST.get('experiencia', '')
+
+            # ⚠️ Estos campos existen en el formulario pero NO están en el modelo Django actual:
+            dui = request.POST.get('dui', '')
+            estudios = request.POST.get('estudios', '')
+            habilidades = request.POST.get('habilidades', '')
+            area_interes = request.POST.get('area_interes', '')
+
+            print(f"[DEBUG-CANDIDATO] DUI={dui}, Estudios={estudios}, Habilidades={habilidades}, AreaInteres={area_interes}")
+
+            # Crear usuario usando Django ORM
+            user = User.objects.create_user(
+                username=usuario,
+                email=correo,
+                password=clave,
+                first_name=nombre_completo
+            )
+
+            # Crear perfil asociado
+            Perfil.objects.create(
+                usuario=user,
+                tipo_usuario=tipo
+            )
+
+            # Crear candidato (solo campos existentes en el modelo)
+            Candidato.objects.create(
+                user=user,
+                telefono=telefono,
+                direccion='',  # placeholder, se puede editar después
+                experiencia=experiencia
+            )
+
+        elif tipo == 'empresa':
+            nombre_empresa = request.POST.get('nombre_empresa')
+            direccion = request.POST.get('direccion_empresa', '')
+            telefono = request.POST.get('telefono_empresa')
+            correo = request.POST.get('email_empresa')
+
+            # ⚠️ Estos campos existen en el formulario pero NO están en el modelo Django actual:
+            sector = request.POST.get('sector', '')
+            persona_contacto = request.POST.get('persona_contacto', '')
+
+            print(f"[DEBUG-EMPRESA] Sector={sector}, Contacto={persona_contacto}")
+
+            # Crear usuario usando Django ORM
+            user = User.objects.create_user(
+                username=usuario,
+                email=correo,
+                password=clave,
+                first_name=nombre_empresa
+            )
+
+            # Crear perfil asociado
+            Perfil.objects.create(
+                usuario=user,
+                tipo_usuario=tipo
+            )
+
+            # Crear empresa (solo campos existentes en el modelo)
+            Empresa.objects.create(
+                nombre=nombre_empresa,
+                descripcion='',
+                direccion=direccion,
+                telefono=telefono,
+                correo=correo
+            )
+
+        else:
+            # Fallback: tipo de usuario no reconocido
+            return render(request, 'empleos/registro.html', {
+                'error': 'Tipo de usuario no válido'
+            })
+
         return redirect('login')
-        
+
     return render(request, 'empleos/registro.html')
 
 

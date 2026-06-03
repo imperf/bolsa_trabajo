@@ -12,6 +12,8 @@ class Empresa(models.Model):
     telefono = models.CharField(max_length=20)
     correo = models.EmailField()
     sitio_web = models.URLField(blank=True, null=True)
+    persona_contacto = models.CharField(max_length=100, blank=True, default='')
+    sector = models.CharField(max_length=100, blank=True, default='')
 
     def __str__(self):
         return self.nombre
@@ -83,6 +85,10 @@ class Candidato(models.Model):
         blank=True
     )
     experiencia = models.TextField()
+    dui = models.CharField(max_length=20, blank=True, default='')
+    area_interes = models.CharField(max_length=100, blank=True, default='')
+    estudios = models.TextField(blank=True, default='')
+    habilidades = models.TextField(blank=True, default='')
 
     def __str__(self):
         return self.user.username
