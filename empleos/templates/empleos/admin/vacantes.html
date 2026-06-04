@@ -1,0 +1,57 @@
+{% extends 'empleos/base.html' %}
+{% block title %}Administrar Vacantes{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto py-12 px-4">
+    <div class="mb-8">
+        <a href="{% url 'admin_panel' %}" class="text-blue-600 hover:text-blue-800">← Volver al Panel</a>
+        <h1 class="text-4xl font-bold text-gray-800 mt-2">💼 Administrar Vacantes</h1>
+    </div>
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-700">ID</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-700">Título</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-700">Empresa</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-700">Categoría</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-700">Ubicación</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-700">Estado</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-700">Fecha</th>
+                    <th class="text-center py-4 px-4 font-semibold text-gray-700">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vacante in vacantes %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 px-4">{{ vacante.id }}</td>
+                    <td class="py-4 px-4 font-medium">{{ vacante.titulo }}</td>
+                    <td class="py-4 px-4">{{ vacante.empresa.nombre }}</td>
+                    <td class="py-4 px-4">
+                        {% if vacante.categoria %}
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">{{ vacante.categoria.nombre }}</span>
+                        {% else %}
+                            <span class="text-gray-400">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 px-4">{{ vacante.ubicacion }}</td>
+                    <td class="py-4 px-4">
+                        {% if vacante.estado == 'ACTIVA' %}
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">Activa</span>
+                        {% else %}
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">Cerrada</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 px-4 text-sm">{{ vacante.fecha_publicacion|date:"d M Y" }}</td>
+                    <td class="py-4 px-4 text-center">
+                        <a href="{% url 'editar_empleo' vacante.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition mr-1">✏️</a>
+                        <a href="{% url 'admin_eliminar_vacante' vacante.id %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm transition">🗑️</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="py-8 text-center text-gray-400">No hay vacantes</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

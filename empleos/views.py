@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from .models import Vacante, Empresa, Categoria, Perfil, Candidato, Postulacion
+from .models import Vacante, Empresa, Categoria, Perfil, Candidato, Postulacion, Notificacion
 
 
 def inicio(request):
@@ -141,6 +142,10 @@ def login_view(request):
         if user is not None:
             login(request, user)
             
+            # Admin users go to admin panel
+            if user.is_superuser or user.is_staff:
+                return redirect('admin_panel')
+            
             try:
                 if user.perfil.tipo_usuario == 'empresa':
                     return redirect('dashboard')
@@ -249,9 +254,27 @@ def registro(request):
 
 @login_required
 def dashboard(request):
-    # Obtener vacantes activas para el dashboard
-    vacantes = Vacante.objects.filter(estado='ACTIVA').select_related('empresa')
-    return render(request, 'empleos/dashboard.html', {'vacantes': vacantes})
+    """
+    Dashboard principal con estadísticas reales del sistema.
+    """
+    from django.db.models import Count
+    
+    # Estadísticas reales
+    empleos_activos = Vacante.objects.filter(estado='ACTIVA').count()
+    total_empresas = Empresa.objects.count()
+    total_usuarios = User.objects.count()
+    total_aplicaciones = Postulacion.objects.count()
+    
+    # Últimas publicaciones (más recientes primero)
+    vacantes = Vacante.objects.filter(estado='ACTIVA').select_related('empresa').order_by('-fecha_publicacion')[:10]
+    
+    return render(request, 'empleos/dashboard.html', {
+        'vacantes': vacantes,
+        'empleos_activos': empleos_activos,
+        'total_empresas': total_empresas,
+        'total_usuarios': total_usuarios,
+        'total_aplicaciones': total_aplicaciones,
+    })
 
 
 @login_required
@@ -303,7 +326,7 @@ def publicar_empleo(request):
         categoria_obj = Categoria.objects.get(id=categoria_id) if categoria_id else None
 
         # Crear vacante usando el ORM de Django
-        Vacante.objects.create(
+        vacante = Vacante.objects.create(
             titulo=titulo,
             empresa=empresa,
             creado_por_usuario=request.user,
@@ -318,6 +341,24 @@ def publicar_empleo(request):
             tipo_contrato=tipo_contrato,
             numero_vacantes=numero_vacantes
         )
+        
+        # Notificar a candidatos interesados en esta categoría
+        if categoria_obj:
+            candidatos_interesados = Candidato.objects.filter(
+                categorias_interes=categoria_obj
+            ).select_related('user')
+            
+            for candidato in candidatos_interesados:
+                Notificacion.objects.create(
+                    usuario=candidato.user,
+                    titulo=f'Nueva oferta en {categoria_obj.nombre}',
+                    mensaje=f'Se publicó una nueva oferta: "{titulo}" en {ubicacion}. ¡Echa un vistazo!',
+                    tipo='NUEVO_EMPLEO',
+                    url=f'/empleo/{vacante.id}/'
+                )
+            
+            if candidatos_interesados.count() > 0:
+                messages.info(request, f'Se notificó a {candidatos_interesados.count()} candidato(s) interesado(s) en esta categoría.')
             
         messages.success(request, '¡Oferta de empleo publicada exitosamente!')
         return redirect('lista_empleos')
@@ -515,10 +556,34 @@ def actualizar_estado_postulacion(request, postulacion_id, estado):
         return redirect('registro')
     
     # Actualizar estado
-    estados_validos = ['PENDIENTE', 'EN_REVISION', 'PRESELECCION', 'ACEPTADO', 'RECHAZADO']
+    estados_validos = ['PENDIENTE', 'EN_REVISION', 'PRESELECCION', 'CONTRATADO', 'RECHAZADO']
     if estado in estados_validos:
+        estado_anterior = postulacion.get_estado_display()
         postulacion.estado = estado
         postulacion.save()
+        
+        # Notificar al candidato del cambio de estado
+        mensaje_notificacion = ''
+        if estado == 'EN_REVISION':
+            mensaje_notificacion = f'Tu postulación para "{postulacion.vacante.titulo}" está siendo revisada.'
+        elif estado == 'PRESELECCION':
+            mensaje_notificacion = f'¡Felicidades! Has sido preseleccionado para "{postulacion.vacante.titulo}".'
+        elif estado == 'CONTRATADO':
+            mensaje_notificacion = f'¡Felicidades! Has sido contratado para "{postulacion.vacante.titulo}". ¡Bienvenido al equipo!'
+        elif estado == 'RECHAZADO':
+            mensaje_notificacion = f'Tu postulación para "{postulacion.vacante.titulo}" no fue seleccionada en esta ocasión.'
+        elif estado == 'PENDIENTE':
+            mensaje_notificacion = f'El estado de tu postulación para "{postulacion.vacante.titulo}" ha cambiado a Pendiente.'
+        
+        if mensaje_notificacion:
+            Notificacion.objects.create(
+                usuario=postulacion.candidato.user,
+                titulo=f'Cambio de estado en tu postulación',
+                mensaje=mensaje_notificacion,
+                tipo='CAMBIO_ESTADO',
+                url=f'/mis-postulaciones/'
+            )
+        
         messages.success(request, f'Postulación actualizada a {postulacion.get_estado_display()} exitosamente.')
     else:
         messages.error(request, 'Estado no válido.')
@@ -551,6 +616,10 @@ def perfil_candidato_editar(request):
         candidato.estudios = request.POST.get('estudios', candidato.estudios)
         candidato.habilidades = request.POST.get('habilidades', candidato.habilidades)
         
+        # Actualizar categorías de interés
+        categorias_ids = request.POST.getlist('categorias_interes')
+        candidato.categorias_interes.set(Categoria.objects.filter(id__in=categorias_ids))
+        
         # Actualizar información del usuario
         request.user.first_name = request.POST.get('first_name', request.user.first_name)
         request.user.email = request.POST.get('email', request.user.email)
@@ -560,8 +629,12 @@ def perfil_candidato_editar(request):
         messages.success(request, '¡Perfil actualizado exitosamente!')
         return redirect('perfil_candidato_editar')
     
+    # Obtener todas las categorías para el formulario
+    categorias = Categoria.objects.all()
+    
     return render(request, 'empleos/perfil_candidato_editar.html', {
         'candidato': candidato,
+        'categorias': categorias,
     })
 
 
@@ -608,3 +681,219 @@ def mis_postulaciones(request):
     return render(request, 'empleos/mis_postulaciones.html', {
         'postulaciones': postulaciones,
     })
+
+
+@login_required
+def notificaciones(request):
+    """
+    Mostrar las notificaciones del usuario.
+    """
+    notificaciones = Notificacion.objects.filter(usuario=request.user)
+    no_leidas = notificaciones.filter(leida=False).count()
+    
+    return render(request, 'empleos/notificaciones.html', {
+        'notificaciones': notificaciones,
+        'no_leidas': no_leidas,
+    })
+
+
+@login_required
+def marcar_notificacion_leida(request, notificacion_id):
+    """
+    Marcar una notificación como leída.
+    """
+    notificacion = get_object_or_404(Notificacion, pk=notificacion_id, usuario=request.user)
+    notificacion.marcar_como_leida()
+    
+    if notificacion.url:
+        return redirect(notificacion.url)
+    return redirect('notificaciones')
+
+
+@login_required
+def marcar_todas_leidas(request):
+    """
+    Marcar todas las notificaciones como leídas.
+    """
+    Notificacion.objects.filter(usuario=request.user, leida=False).update(leida=True)
+    messages.success(request, 'Todas las notificaciones han sido marcadas como leídas.')
+    return redirect('notificaciones')
+
+
+# =========================
+# ADMIN VIEWS
+# =========================
+
+def is_admin(user):
+    """Check if user is admin (superuser or staff)."""
+    return user.is_superuser or user.is_staff
+
+
+@login_required
+def admin_panel(request):
+    """
+    Panel de administración principal.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para acceder al panel de administración.')
+        return redirect('inicio')
+    
+    from django.db.models import Count
+    
+    # Estadísticas
+    total_usuarios = User.objects.count()
+    total_candidatos = Candidato.objects.count()
+    total_empresas = Empresa.objects.count()
+    total_vacantes = Vacante.objects.count()
+    total_postulaciones = Postulacion.objects.count()
+    total_categorias = Categoria.objects.count()
+    
+    # Últimos usuarios registrados
+    ultimos_usuarios = User.objects.order_by('-date_joined')[:10]
+    
+    return render(request, 'empleos/admin/panel.html', {
+        'total_usuarios': total_usuarios,
+        'total_candidatos': total_candidatos,
+        'total_empresas': total_empresas,
+        'total_vacantes': total_vacantes,
+        'total_postulaciones': total_postulaciones,
+        'total_categorias': total_categorias,
+        'ultimos_usuarios': ultimos_usuarios,
+    })
+
+
+@login_required
+def admin_usuarios(request):
+    """
+    Administrar todos los usuarios.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para acceder.')
+        return redirect('inicio')
+    
+    usuarios = User.objects.all().order_by('-date_joined')
+    return render(request, 'empleos/admin/usuarios.html', {'usuarios': usuarios})
+
+
+@login_required
+def admin_eliminar_usuario(request, user_id):
+    """
+    Eliminar un usuario (solo admin).
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    usuario = get_object_or_404(User, pk=user_id)
+    
+    if usuario == request.user:
+        messages.error(request, 'No puedes eliminar tu propia cuenta.')
+        return redirect('admin_usuarios')
+    
+    if request.method == 'POST':
+        username = usuario.username
+        usuario.delete()
+        messages.success(request, f'Usuario "{username}" eliminado exitosamente.')
+        return redirect('admin_usuarios')
+    
+    return render(request, 'empleos/admin/confirmar_eliminar_usuario.html', {'usuario': usuario})
+
+
+@login_required
+def admin_empresas(request):
+    """
+    Administrar todas las empresas.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para acceder.')
+        return redirect('inicio')
+    
+    empresas = Empresa.objects.all()
+    return render(request, 'empleos/admin/empresas.html', {'empresas': empresas})
+
+
+@login_required
+def admin_vacantes(request):
+    """
+    Administrar todas las vacantes.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para acceder.')
+        return redirect('inicio')
+    
+    vacantes = Vacante.objects.all().select_related('empresa', 'categoria').order_by('-fecha_publicacion')
+    return render(request, 'empleos/admin/vacantes.html', {'vacantes': vacantes})
+
+
+@login_required
+def admin_eliminar_vacante(request, vacante_id):
+    """
+    Eliminar cualquier vacante (solo admin).
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    vacante = get_object_or_404(Vacante, pk=vacante_id)
+    
+    if request.method == 'POST':
+        titulo = vacante.titulo
+        vacante.delete()
+        messages.success(request, f'Vacante "{titulo}" eliminada exitosamente.')
+        return redirect('admin_vacantes')
+    
+    return render(request, 'empleos/admin/confirmar_eliminar_vacante.html', {'vacante': vacante})
+
+
+@login_required
+def admin_categorias(request):
+    """
+    Administrar categorías.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para acceder.')
+        return redirect('inicio')
+    
+    categorias = Categoria.objects.all()
+    return render(request, 'empleos/admin/categorias.html', {'categorias': categorias})
+
+
+@login_required
+def admin_crear_categoria(request):
+    """
+    Crear nueva categoría.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        if nombre:
+            Categoria.objects.create(nombre=nombre)
+            messages.success(request, f'Categoría "{nombre}" creada exitosamente.')
+            return redirect('admin_categorias')
+        else:
+            messages.error(request, 'El nombre es requerido.')
+    
+    return render(request, 'empleos/admin/crear_categoria.html')
+
+
+@login_required
+def admin_eliminar_categoria(request, categoria_id):
+    """
+    Eliminar una categoría (solo admin).
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    categoria = get_object_or_404(Categoria, pk=categoria_id)
+    
+    if request.method == 'POST':
+        nombre = categoria.nombre
+        categoria.delete()
+        messages.success(request, f'Categoría "{nombre}" eliminada exitosamente.')
+        return redirect('admin_categorias')
+    
+    return render(request, 'empleos/admin/confirmar_eliminar_categoria.html', {'categoria': categoria})

@@ -73,13 +73,18 @@
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Área de Interés</label>
-                        <input
-                            type="text"
-                            name="area_interes"
-                            value="{{ candidato.area_interes }}"
-                            placeholder="Ej: Desarrollo Web, Marketing, Contabilidad..."
-                            class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <label class="block text-gray-700 font-semibold mb-2">Categorías de Interés</label>
+                        <p class="text-sm text-gray-500 mb-2">Selecciona las áreas que te interesan para recibir notificaciones de nuevas ofertas:</p>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {% for cat in categorias %}
+                                <label class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" name="categorias_interes" value="{{ cat.id }}" 
+                                           {% if cat in candidato.categorias_interes.all %}checked{% endif %}
+                                           class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                                    <span class="text-sm text-gray-700">{{ cat.nombre }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
                     </div>
 
                     <div>

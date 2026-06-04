@@ -20,5 +20,18 @@ urlpatterns = [
     path('candidato/<int:candidato_id>/', views.perfil_candidato, name='perfil_candidato'),
     path('empleo/editar/<int:vacante_id>/', views.editar_empleo, name='editar_empleo'),
     path('empleo/eliminar/<int:vacante_id>/', views.eliminar_empleo, name='eliminar_empleo'),
+    path('notificaciones/', views.notificaciones, name='notificaciones'),
+    path('notificacion/<int:notificacion_id>/leer/', views.marcar_notificacion_leida, name='marcar_notificacion_leida'),
+    path('notificaciones/marcar-todas/', views.marcar_todas_leidas, name='marcar_todas_leidas'),
+    # Admin URLs
+    path('admin-panel/', views.admin_panel, name='admin_panel'),
+    path('admin/usuarios/', views.admin_usuarios, name='admin_usuarios'),
+    path('admin/eliminar-usuario/<int:user_id>/', views.admin_eliminar_usuario, name='admin_eliminar_usuario'),
+    path('admin/empresas/', views.admin_empresas, name='admin_empresas'),
+    path('admin/vacantes/', views.admin_vacantes, name='admin_vacantes'),
+    path('admin/eliminar-vacante/<int:vacante_id>/', views.admin_eliminar_vacante, name='admin_eliminar_vacante'),
+    path('admin/categorias/', views.admin_categorias, name='admin_categorias'),
+    path('admin/crear-categoria/', views.admin_crear_categoria, name='admin_crear_categoria'),
+    path('admin/eliminar-categoria/<int:categoria_id>/', views.admin_eliminar_categoria, name='admin_eliminar_categoria'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

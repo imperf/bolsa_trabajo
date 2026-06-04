@@ -29,8 +29,21 @@
 
                 <a href="{% url 'lista_empleos' %}" class="hover:text-blue-200 transition">Empleos</a>
                 <a href="{% url 'empresas' %}" class="hover:text-blue-200 transition">Empresas</a>
+                
+                <a href="{% url 'notificaciones' %}" class="relative hover:text-blue-200 transition">
+                    🔔
+                    {% if notificaciones_no_leidas > 0 %}
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ notificaciones_no_leidas }}
+                        </span>
+                    {% endif %}
+                </a>
 
-                {% if user.perfil.tipo_usuario == 'empresa' %}
+                {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'admin_panel' %}" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold transition">
+                        🔧 Admin Panel
+                    </a>
+                {% elif user.perfil.tipo_usuario == 'empresa' %}
                     <a href="{% url 'dashboard' %}" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition">
                         Panel Empresa
                     </a>

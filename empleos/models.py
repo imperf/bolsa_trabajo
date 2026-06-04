@@ -123,6 +123,12 @@ class Candidato(models.Model):
     experiencia = models.TextField()
     dui = models.CharField(max_length=20, blank=True, default='')
     area_interes = models.CharField(max_length=100, blank=True, default='')
+    categorias_interes = models.ManyToManyField(
+        Categoria,
+        blank=True,
+        related_name='candidatos_interesados',
+        verbose_name='Categorías de interés'
+    )
     estudios = models.TextField(blank=True, default='')
     habilidades = models.TextField(blank=True, default='')
 
@@ -138,7 +144,7 @@ class Postulacion(models.Model):
         ('PENDIENTE', 'Pendiente'),
         ('EN_REVISION', 'En Revisión'),
         ('PRESELECCION', 'Preselección'),
-        ('ACEPTADO', 'Aceptado'),
+        ('CONTRATADO', 'Contratado'),
         ('RECHAZADO', 'Rechazado'),
     ]
 
@@ -179,3 +185,40 @@ class Perfil(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} - {self.tipo_usuario}"
+
+
+# =========================
+# NOTIFICACIONES
+# =========================
+class Notificacion(models.Model):
+    TIPOS = [
+        ('NUEVO_EMPLEO', 'Nuevo Empleo'),
+        ('CAMBIO_ESTADO', 'Cambio de Estado'),
+        ('SISTEMA', 'Sistema'),
+    ]
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='notificaciones'
+    )
+    titulo = models.CharField(max_length=200)
+    mensaje = models.TextField()
+    tipo = models.CharField(
+        max_length=20,
+        choices=TIPOS,
+        default='SISTEMA'
+    )
+    leida = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    url = models.CharField(max_length=500, blank=True, default='')
+
+    class Meta:
+        ordering = ['-fecha_creacion']
+
+    def __str__(self):
+        return f"{self.titulo} - {self.usuario.username}"
+
+    def marcar_como_leida(self):
+        self.leida = True
+        self.save()
