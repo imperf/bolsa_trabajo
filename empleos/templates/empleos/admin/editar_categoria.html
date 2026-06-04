@@ -1,0 +1,21 @@
+{% extends 'empleos/base.html' %}
+{% block title %}Editar Categoría - Admin{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto py-12 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+        <a href="{% url 'admin_categorias' %}" class="text-blue-600 hover:text-blue-800">← Volver a Categorías</a>
+        <h1 class="text-3xl font-bold text-gray-800 mt-4 mb-6">🏷️ Editar Categoría</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Nombre de la Categoría</label>
+                <input type="text" name="nombre" value="{{ categoria.nombre }}" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="flex gap-3">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition">💾 Guardar Cambios</button>
+                <a href="{% url 'admin_categorias' %}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold transition text-center">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

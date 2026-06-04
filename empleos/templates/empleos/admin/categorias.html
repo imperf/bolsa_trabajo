@@ -26,6 +26,7 @@
                     <td class="py-4 px-6 font-medium">{{ cat.nombre }}</td>
                     <td class="py-4 px-6">{{ cat.vacante_set.count }}</td>
                     <td class="py-4 px-6 text-center">
+                        <a href="{% url 'admin_editar_categoria' cat.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition mr-1">✏️ Editar</a>
                         <a href="{% url 'admin_eliminar_categoria' cat.id %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm transition">🗑️ Eliminar</a>
                     </td>
                 </tr>

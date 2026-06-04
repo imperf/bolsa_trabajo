@@ -43,7 +43,15 @@
                     </td>
                     <td class="py-4 px-4 text-sm">{{ vacante.fecha_publicacion|date:"d M Y" }}</td>
                     <td class="py-4 px-4 text-center">
-                        <a href="{% url 'editar_empleo' vacante.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition mr-1">✏️</a>
+                        <a href="{% url 'admin_editar_vacante' vacante.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition mr-1">✏️</a>
+                        <form method="POST" action="{% url 'admin_toggle_vacante_estado' vacante.id %}" class="inline">
+                            {% csrf_token %}
+                            {% if vacante.estado == 'ACTIVA' %}
+                            <button type="submit" name="estado" value="CERRADA" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-lg text-sm transition mr-1" title="Cerrar vacante">🔒</button>
+                            {% else %}
+                            <button type="submit" name="estado" value="ACTIVA" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm transition mr-1" title="Activar vacante">🔓</button>
+                            {% endif %}
+                        </form>
                         <a href="{% url 'admin_eliminar_vacante' vacante.id %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm transition">🗑️</a>
                     </td>
                 </tr>

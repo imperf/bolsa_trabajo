@@ -1,0 +1,91 @@
+{% extends 'empleos/base.html' %}
+{% block title %}Editar Vacante - Admin{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto py-12 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+        <a href="{% url 'admin_vacantes' %}" class="text-blue-600 hover:text-blue-800">← Volver a Vacantes</a>
+        <h1 class="text-3xl font-bold text-gray-800 mt-4 mb-6">💼 Editar Vacante: {{ vacante.titulo }}</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="grid md:grid-cols-2 gap-5">
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Título</label>
+                    <input type="text" name="titulo" value="{{ vacante.titulo }}" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Empresa</label>
+                    <input type="text" value="{{ vacante.empresa.nombre }}" class="w-full border border-gray-200 rounded-xl p-3 bg-gray-100 text-gray-500" disabled>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Ubicación</label>
+                    <input type="text" name="ubicacion" value="{{ vacante.ubicacion }}" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Categoría</label>
+                    <select name="categoria" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Sin categoría</option>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.id }}" {% if vacante.categoria.id == cat.id %}selected{% endif %}>{{ cat.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Salario</label>
+                    <input type="text" name="salario" value="{% if vacante.salario %}{{ vacante.salario }}{% endif %}" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00">
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Fecha Límite</label>
+                    <input type="date" name="fecha_limite" value="{{ vacante.fecha_limite|date:'Y-m-d' }}" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Tipo de Contrato</label>
+                    <select name="tipo_contrato" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="TIEMPO_COMPLETO" {% if vacante.tipo_contrato == 'TIEMPO_COMPLETO' %}selected{% endif %}>Tiempo Completo</option>
+                        <option value="MEDIO_TIEMPO" {% if vacante.tipo_contrato == 'MEDIO_TIEMPO' %}selected{% endif %}>Medio Tiempo</option>
+                        <option value="TEMPORAL" {% if vacante.tipo_contrato == 'TEMPORAL' %}selected{% endif %}>Temporal</option>
+                        <option value="PRACTICAS" {% if vacante.tipo_contrato == 'PRACTICAS' %}selected{% endif %}>Prácticas</option>
+                        <option value="PROYECTO" {% if vacante.tipo_contrato == 'PROYECTO' %}selected{% endif %}>Por Proyecto</option>
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Nivel de Experiencia</label>
+                    <select name="nivel_experiencia" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="SIN_EXPERIENCIA" {% if vacante.nivel_experiencia == 'SIN_EXPERIENCIA' %}selected{% endif %}>Sin experiencia</option>
+                        <option value="JUNIOR" {% if vacante.nivel_experiencia == 'JUNIOR' %}selected{% endif %}>Junior (1-2 años)</option>
+                        <option value="MID_LEVEL" {% if vacante.nivel_experiencia == 'MID_LEVEL' %}selected{% endif %}>Mid-Level (3-5 años)</option>
+                        <option value="SENIOR" {% if vacante.nivel_experiencia == 'SENIOR' %}selected{% endif %}>Senior (5-8 años)</option>
+                        <option value="EXPERT" {% if vacante.nivel_experiencia == 'EXPERT' %}selected{% endif %}>Expert (+8 años)</option>
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Número de Vacantes</label>
+                    <input type="number" name="numero_vacantes" value="{{ vacante.numero_vacantes }}" min="1" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2">Estado</label>
+                    <select name="estado" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ACTIVA" {% if vacante.estado == 'ACTIVA' %}selected{% endif %}>Activa</option>
+                        <option value="CERRADA" {% if vacante.estado == 'CERRADA' %}selected{% endif %}>Cerrada</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-5">
+                <label class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                <textarea name="descripcion" rows="4" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ vacante.descripcion }}</textarea>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Requisitos</label>
+                <textarea name="requisitos" rows="3" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ vacante.requisitos }}</textarea>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Experiencia</label>
+                <textarea name="experiencia" rows="2" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ vacante.experiencia }}</textarea>
+            </div>
+            <div class="flex gap-3">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition">💾 Guardar Cambios</button>
+                <a href="{% url 'admin_vacantes' %}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold transition text-center">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

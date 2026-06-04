@@ -897,3 +897,188 @@ def admin_eliminar_categoria(request, categoria_id):
         return redirect('admin_categorias')
     
     return render(request, 'empleos/admin/confirmar_eliminar_categoria.html', {'categoria': categoria})
+
+
+@login_required
+def admin_editar_usuario(request, user_id):
+    """
+    Editar un usuario (solo admin). Permite cambiar nombre, email, estado activo y staff.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    usuario = get_object_or_404(User, pk=user_id)
+    
+    if request.method == 'POST':
+        usuario.first_name = request.POST.get('first_name', usuario.first_name)
+        usuario.email = request.POST.get('email', usuario.email)
+        usuario.is_active = request.POST.get('is_active') == 'on'
+        
+        # Only superusers can toggle staff status
+        if request.user.is_superuser:
+            usuario.is_staff = request.POST.get('is_staff') == 'on'
+        
+        usuario.save()
+        messages.success(request, f'Usuario "{usuario.username}" actualizado exitosamente.')
+        return redirect('admin_usuarios')
+    
+    return render(request, 'empleos/admin/editar_usuario.html', {'usuario': usuario})
+
+
+@login_required
+def admin_editar_empresa(request, empresa_id):
+    """
+    Editar una empresa (solo admin).
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    empresa = get_object_or_404(Empresa, pk=empresa_id)
+    
+    if request.method == 'POST':
+        empresa.nombre = request.POST.get('nombre', empresa.nombre)
+        empresa.correo = request.POST.get('correo', empresa.correo)
+        empresa.telefono = request.POST.get('telefono', empresa.telefono)
+        empresa.direccion = request.POST.get('direccion', empresa.direccion)
+        empresa.sector = request.POST.get('sector', empresa.sector)
+        empresa.descripcion = request.POST.get('descripcion', empresa.descripcion)
+        empresa.persona_contacto = request.POST.get('persona_contacto', empresa.persona_contacto)
+        empresa.sitio_web = request.POST.get('sitio_web', empresa.sitio_web)
+        empresa.save()
+        messages.success(request, f'Empresa "{empresa.nombre}" actualizada exitosamente.')
+        return redirect('admin_empresas')
+    
+    return render(request, 'empleos/admin/editar_empresa.html', {'empresa': empresa})
+
+
+@login_required
+def admin_eliminar_empresa(request, empresa_id):
+    """
+    Eliminar una empresa (solo admin).
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    empresa = get_object_or_404(Empresa, pk=empresa_id)
+    
+    if request.method == 'POST':
+        nombre = empresa.nombre
+        empresa.delete()
+        messages.success(request, f'Empresa "{nombre}" eliminada exitosamente.')
+        return redirect('admin_empresas')
+    
+    return render(request, 'empleos/admin/confirmar_eliminar_empresa.html', {'empresa': empresa})
+
+
+@login_required
+def admin_editar_vacante(request, vacante_id):
+    """
+    Editar una vacante (solo admin). No requiere ser la empresa propietaria.
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    vacante = get_object_or_404(Vacante, pk=vacante_id)
+    categorias = Categoria.objects.all()
+    
+    if request.method == 'POST':
+        vacante.titulo = request.POST.get('titulo', vacante.titulo)
+        vacante.ubicacion = request.POST.get('ubicacion', vacante.ubicacion)
+        vacante.descripcion = request.POST.get('descripcion', vacante.descripcion)
+        vacante.requisitos = request.POST.get('requisitos', vacante.requisitos)
+        vacante.experiencia = request.POST.get('experiencia', vacante.experiencia)
+        vacante.nivel_experiencia = request.POST.get('nivel_experiencia', vacante.nivel_experiencia)
+        vacante.fecha_limite = request.POST.get('fecha_limite', vacante.fecha_limite)
+        vacante.tipo_contrato = request.POST.get('tipo_contrato', vacante.tipo_contrato)
+        vacante.estado = request.POST.get('estado', vacante.estado)
+        
+        # Sanitización de salario
+        salario = request.POST.get('salario')
+        if salario:
+            salario = salario.replace('$', '').replace(',', '').strip()
+            try:
+                vacante.salario = float(salario)
+            except ValueError:
+                vacante.salario = None
+        else:
+            vacante.salario = None
+        
+        # Sanitización de numero_vacantes
+        try:
+            vacante.numero_vacantes = int(request.POST.get('numero_vacantes', vacante.numero_vacantes))
+            if vacante.numero_vacantes < 1:
+                vacante.numero_vacantes = 1
+        except (ValueError, TypeError):
+            pass
+        
+        # Categoría
+        categoria_id = request.POST.get('categoria')
+        if categoria_id:
+            vacante.categoria = Categoria.objects.get(id=categoria_id)
+        else:
+            vacante.categoria = None
+        
+        vacante.save()
+        messages.success(request, f'Vacante "{vacante.titulo}" actualizada exitosamente.')
+        return redirect('admin_vacantes')
+    
+    return render(request, 'empleos/admin/editar_vacante.html', {
+        'vacante': vacante,
+        'categorias': categorias,
+    })
+
+
+@login_required
+def admin_toggle_vacante_estado(request, vacante_id):
+    """
+    Alternar el estado de una vacante entre ACTIVA y CERRADA (solo admin).
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    vacante = get_object_or_404(Vacante, pk=vacante_id)
+    
+    if request.method == 'POST':
+        nuevo_estado = request.POST.get('estado', '')
+        if nuevo_estado in ['ACTIVA', 'CERRADA']:
+            vacante.estado = nuevo_estado
+            vacante.save()
+            estado_display = 'Activa' if nuevo_estado == 'ACTIVA' else 'Cerrada'
+            messages.success(request, f'Vacante "{vacante.titulo}" cambiada a {estado_display}.')
+        else:
+            # Toggle if no specific state provided
+            vacante.estado = 'CERRADA' if vacante.estado == 'ACTIVA' else 'ACTIVA'
+            vacante.save()
+            estado_display = 'Activa' if vacante.estado == 'ACTIVA' else 'Cerrada'
+            messages.success(request, f'Vacante "{vacante.titulo}" cambiada a {estado_display}.')
+    
+    return redirect('admin_vacantes')
+
+
+@login_required
+def admin_editar_categoria(request, categoria_id):
+    """
+    Editar una categoría (solo admin).
+    """
+    if not is_admin(request.user):
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('inicio')
+    
+    categoria = get_object_or_404(Categoria, pk=categoria_id)
+    
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        if nombre:
+            categoria.nombre = nombre
+            categoria.save()
+            messages.success(request, f'Categoría actualizada a "{nombre}" exitosamente.')
+            return redirect('admin_categorias')
+        else:
+            messages.error(request, 'El nombre es requerido.')
+    
+    return render(request, 'empleos/admin/editar_categoria.html', {'categoria': categoria})
