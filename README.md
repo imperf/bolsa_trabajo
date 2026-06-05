@@ -40,8 +40,13 @@ Plataforma web de bolsa de trabajo construida con Django y MySQL. Permite a empr
 ## Requisitos
 
 - Python 3.13+
-- MySQL/MariaDB 10.1+
+- MySQL 8.0+ o MariaDB 10.1+
 - pip (gestor de paquetes de Python)
+
+> **Nota para usuarios de MySQL:** Los dumps usan la colación `utf8mb4_uca1400_ai_ci` (específica de MariaDB) en las tablas legacy. Si usas MySQL, ejecuta este comando en el directorio del proyecto antes de importar:
+> ```bash
+> sed -i 's/utf8mb4_uca1400_ai_ci/utf8mb4_unicode_ci/g' bolsa_trabajo_backup_completo.sql bolsa_trabajo_deploy.sql bolsa_trabajo_schema.sql
+> ```
 
 ## Instalación para colaboradores
 
