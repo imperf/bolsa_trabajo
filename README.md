@@ -82,12 +82,12 @@ EXIT;
 
 ### 5. Importar base de datos
 
-**Opción A - Backup completo (con triggers, datos, eventos y procedimientos):**
+**Opción A - Backup completo (con datos, eventos y procedimientos):**
 ```bash
 mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < bolsa_trabajo_backup_completo.sql
 ```
 
-**Opción B - Backup de deployment (con triggers y datos, sin eventos ni procedimientos):**
+**Opción B - Backup de deployment (solo con datos, sin triggers ni eventos):**
 ```bash
 mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < bolsa_trabajo_deploy.sql
 ```
@@ -97,6 +97,18 @@ mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < bolsa_trabajo_deploy.sql
 python manage.py migrate
 ```
 > Nota: Con esta opción no tendrás datos de ejemplo, categorías, ni usuario admin. Tendrás que crearlos manualmente.
+
+> **Importante:** Las opciones A y B no requieren ejecutar `migrate` ya que los dumps incluyen el esquema completo y la tabla `django_migrations` con todas las migraciones marcadas como aplicadas.
+
+### 5b. Crear triggers y tablas de auditoría (requerido para todas las opciones)
+
+Después de importar la base de datos (o ejecutar migrate), crear las tablas de historial y los triggers de auditoría:
+
+```bash
+mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < empleos_triggers_update.sql
+```
+
+> Nota: Los dumps no incluyen triggers inline para evitar errores de orden de tablas. Este script crea las tablas de historial primero y luego los triggers, evitando el problema. Django migrations no crea triggers de MySQL, por lo que este paso es siempre necesario.
 
 ### 6. Ejecutar servidor de desarrollo
 
