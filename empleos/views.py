@@ -133,7 +133,7 @@ def empresas(request):
 
 def login_view(request):
     if request.method == 'POST':
-        usuario_o_correo = request.POST.get('email') 
+        usuario_o_correo = request.POST.get('username') 
         clave = request.POST.get('password')
         
         # Autenticar con Django auth
