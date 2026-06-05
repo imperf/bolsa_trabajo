@@ -1,8 +1,7 @@
-mysqldump: Deprecated program name. It will be removed in a future release, use '/usr/bin/mariadb-dump' instead
 /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-12.0.2-MariaDB, for Linux (x86_64)
 --
--- Host: localhost    Database: bolsa_trabajo
+-- Host: 127.0.0.1    Database: bolsa_trabajo
 -- ------------------------------------------------------
 -- Server version	12.0.2-MariaDB
 
@@ -191,7 +190,7 @@ LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
 set autocommit=0;
 INSERT INTO `auth_user` VALUES
-(1,'pbkdf2_sha256$720000$XaP8tLQIS5sxWrmgqORKWE$R0SvcebBsss1qBobGvcpp2wmykWdZgAoAEOtiu4eXUE=','2026-06-02 21:47:22.211390',1,'admin','','','admin@example.com',1,1,'2026-06-02 21:10:06.174440','system','2026-06-02 15:11:31','django_user@localhost','2026-06-02 15:47:22'),
+(1,'pbkdf2_sha256$720000$XaP8tLQIS5sxWrmgqORKWE$R0SvcebBsss1qBobGvcpp2wmykWdZgAoAEOtiu4eXUE=','2026-06-04 18:42:24.611370',1,'admin','','','admin@example.com',1,1,'2026-06-02 21:10:06.174440','system','2026-06-02 15:11:31','django_user@localhost','2026-06-04 12:42:24'),
 (2,'pbkdf2_sha256$720000$LC6vp4TVm1c3xOuSimGVUv$jpB94lAUew+nhRRgoXgt9Jx1C55trrnb5hBXUsu/NV8=','2026-06-02 21:55:39.361425',0,'Juanito','Juan Alberto Perez Ortiz','','Juanperez@gmail.com',0,1,'2026-06-02 21:27:11.244596','django_user@localhost','2026-06-02 15:27:11','django_user@localhost','2026-06-02 15:55:39'),
 (3,'pbkdf2_sha256$720000$wQrBRL3kLCDguRO8DCrOqG$gUpHSdYy72aQ96/HcPjAloDzN+JYtmT4x65jyR0HLIQ=','2026-06-04 17:47:51.965308',0,'TECNASA','TECNASA','','tecnasa.rrhh@gmail.com',0,1,'2026-06-03 02:15:56.556383','django_user@localhost','2026-06-02 20:15:56','django_user@localhost','2026-06-04 11:47:51'),
 (4,'pbkdf2_sha256$720000$Pwqeyt3sQhkbIfbh4pOopb$wMEUqKfLHV8xyXpI8yTOettWLPc/48ENC19vLj2ITZ8=','2026-06-04 17:43:35.513537',0,'Kevin','Kevin Durazno','','kevin@gmail.com',0,1,'2026-06-03 19:25:56.412898','django_user@localhost','2026-06-03 13:25:56','django_user@localhost','2026-06-04 11:43:35');
@@ -397,127 +396,6 @@ set autocommit=0;
 /*!40000 ALTER TABLE `candidato` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_candidato_insert
-BEFORE INSERT ON candidato
-FOR EACH ROW
-BEGIN
-  SET NEW.creado_por     = USER();
-  SET NEW.fecha_creacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_candidato_insert
-AFTER INSERT ON candidato
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_candidato (accion, fecha_accion, usuario_accion, candidato_id, usuario_id, nombre_completo, dui, telefono, area_interes, creado_por, fecha_creacion)
-  VALUES ('INSERT', NOW(), USER(), NEW.candidato_id, NEW.usuario_id, NEW.nombre_completo, NEW.dui, NEW.telefono, NEW.area_interes, NEW.creado_por, NEW.fecha_creacion);
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_candidato_update
-BEFORE UPDATE ON candidato
-FOR EACH ROW
-BEGIN
-  SET NEW.modificado_por     = USER();
-  SET NEW.fecha_modificacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_candidato_update
-AFTER UPDATE ON candidato
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_candidato (
-    accion, fecha_accion, usuario_accion,
-    candidato_id, usuario_id, nombre_completo, dui, telefono, area_interes,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'UPDATE', NOW(), USER(),
-    OLD.candidato_id, OLD.usuario_id, OLD.nombre_completo,
-    OLD.dui, OLD.telefono, OLD.area_interes,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_candidato_delete
-BEFORE DELETE ON candidato
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_candidato (
-    accion, fecha_accion, usuario_accion,
-    candidato_id, usuario_id, nombre_completo, dui, telefono, area_interes,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'DELETE', NOW(), USER(),
-    OLD.candidato_id, OLD.usuario_id, OLD.nombre_completo,
-    OLD.dui, OLD.telefono, OLD.area_interes,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `candidato_certificacion`
@@ -755,8 +633,6 @@ CREATE TABLE `django_session` (
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
 set autocommit=0;
-INSERT INTO `django_session` VALUES
-('67sfu5cbkezlco5r6j82tfgsv9q43l8x','.eJxVjMsOgjAQRf-la9M4xb5cuucbyLR3sKiBhMLK-O9CwkK395xz36rjdSndWmXuBqiratTpd0ucnzLuAA8e75PO07jMQ9K7og9adTtBXrfD_TsoXMtWs7cRFGDgg8il74k9zqCYAkf0GxIgWZMciYnskOECcUNWfLYuq88XDxw5Ag:1wVCAZ:2P_nc1UtyWL4T8Mdc43H98UVezfDPv_IfcgXQrSnkq0','2026-06-18 17:47:51.978864');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -801,6 +677,147 @@ INSERT INTO `empleos_candidato` VALUES
 /*!40000 ALTER TABLE `empleos_candidato` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_audit_candidato_django_insert
+BEFORE INSERT ON empleos_candidato
+FOR EACH ROW
+BEGIN
+  SET NEW.creado_por = COALESCE(
+    (SELECT username FROM auth_user WHERE id = NEW.user_id),
+    USER()
+  );
+  SET NEW.fecha_creacion = NOW();
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_candidato_django_insert
+AFTER INSERT ON empleos_candidato
+FOR EACH ROW
+BEGIN
+  INSERT INTO hist_empleos_candidato (
+    accion, fecha_accion, usuario_accion,
+    candidato_id, user_id, telefono, direccion, experiencia,
+    dui, area_interes, estudios, habilidades,
+    creado_por, fecha_creacion, modificado_por, fecha_modificacion
+  ) VALUES (
+    'INSERT', NOW(),
+    COALESCE((SELECT username FROM auth_user WHERE id = NEW.user_id), USER()),
+    NEW.id, NEW.user_id, NEW.telefono, NEW.direccion, NEW.experiencia,
+    NEW.dui, NEW.area_interes, NEW.estudios, NEW.habilidades,
+    NEW.creado_por, NEW.fecha_creacion, NEW.modificado_por, NEW.fecha_modificacion
+  );
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_audit_candidato_django_update
+BEFORE UPDATE ON empleos_candidato
+FOR EACH ROW
+BEGIN
+  SET NEW.modificado_por = COALESCE(
+    (SELECT username FROM auth_user WHERE id = NEW.user_id),
+    USER()
+  );
+  SET NEW.fecha_modificacion = NOW();
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_candidato_django_update
+AFTER UPDATE ON empleos_candidato
+FOR EACH ROW
+BEGIN
+  INSERT INTO hist_empleos_candidato (
+    accion, fecha_accion, usuario_accion,
+    candidato_id, user_id, telefono, direccion, experiencia,
+    dui, area_interes, estudios, habilidades,
+    creado_por, fecha_creacion, modificado_por, fecha_modificacion
+  ) VALUES (
+    'UPDATE', NOW(),
+    COALESCE((SELECT username FROM auth_user WHERE id = OLD.user_id), USER()),
+    OLD.id, OLD.user_id, OLD.telefono, OLD.direccion, OLD.experiencia,
+    OLD.dui, OLD.area_interes, OLD.estudios, OLD.habilidades,
+    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
+  );
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_candidato_django_delete
+BEFORE DELETE ON empleos_candidato
+FOR EACH ROW
+BEGIN
+  INSERT INTO hist_empleos_candidato (
+    accion, fecha_accion, usuario_accion,
+    candidato_id, user_id, telefono, direccion, experiencia,
+    dui, area_interes, estudios, habilidades,
+    creado_por, fecha_creacion, modificado_por, fecha_modificacion
+  ) VALUES (
+    'DELETE', NOW(),
+    COALESCE((SELECT username FROM auth_user WHERE id = OLD.user_id), USER()),
+    OLD.id, OLD.user_id, OLD.telefono, OLD.direccion, OLD.experiencia,
+    OLD.dui, OLD.area_interes, OLD.estudios, OLD.habilidades,
+    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
+  );
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `empleos_candidato_categorias_interes`
@@ -1135,6 +1152,132 @@ INSERT INTO `empleos_postulacion` VALUES
 /*!40000 ALTER TABLE `empleos_postulacion` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_audit_postulacion_django_insert
+BEFORE INSERT ON empleos_postulacion
+FOR EACH ROW
+BEGIN
+  SET NEW.creado_por = USER();
+  SET NEW.fecha_creacion = NOW();
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_postulacion_django_insert
+AFTER INSERT ON empleos_postulacion
+FOR EACH ROW
+BEGIN
+  INSERT INTO hist_empleos_postulacion (
+    accion, fecha_accion, usuario_accion,
+    postulacion_id, candidato_id, vacante_id, estado, mensaje,
+    fecha_postulacion, creado_por, fecha_creacion
+  ) VALUES (
+    'INSERT', NOW(), USER(),
+    NEW.id, NEW.candidato_id, NEW.vacante_id, NEW.estado, NEW.mensaje,
+    NEW.fecha_postulacion, NEW.creado_por, NEW.fecha_creacion
+  );
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_audit_postulacion_django_update
+BEFORE UPDATE ON empleos_postulacion
+FOR EACH ROW
+BEGIN
+  SET NEW.modificado_por = USER();
+  SET NEW.fecha_modificacion = NOW();
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_postulacion_django_update
+AFTER UPDATE ON empleos_postulacion
+FOR EACH ROW
+BEGIN
+  INSERT INTO hist_empleos_postulacion (
+    accion, fecha_accion, usuario_accion,
+    postulacion_id, candidato_id, vacante_id, estado, mensaje,
+    fecha_postulacion, creado_por, fecha_creacion, modificado_por, fecha_modificacion
+  ) VALUES (
+    'UPDATE', NOW(), USER(),
+    OLD.id, OLD.candidato_id, OLD.vacante_id, OLD.estado, OLD.mensaje,
+    OLD.fecha_postulacion, OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
+  );
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_postulacion_django_delete
+BEFORE DELETE ON empleos_postulacion
+FOR EACH ROW
+BEGIN
+  INSERT INTO hist_empleos_postulacion (
+    accion, fecha_accion, usuario_accion,
+    postulacion_id, candidato_id, vacante_id, estado, mensaje,
+    fecha_postulacion, creado_por, fecha_creacion, modificado_por, fecha_modificacion
+  ) VALUES (
+    'DELETE', NOW(), USER(),
+    OLD.id, OLD.candidato_id, OLD.vacante_id, OLD.estado, OLD.mensaje,
+    OLD.fecha_postulacion, OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
+  );
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `empleos_vacante`
@@ -1436,127 +1579,6 @@ set autocommit=0;
 /*!40000 ALTER TABLE `empresa` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_empresa_insert
-BEFORE INSERT ON empresa
-FOR EACH ROW
-BEGIN
-  SET NEW.creado_por     = USER();
-  SET NEW.fecha_creacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_empresa_insert
-AFTER INSERT ON empresa
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_empresa (accion, fecha_accion, usuario_accion, empresa_id, nombre, correo, persona_contacto, direccion, sector_id, creado_por, fecha_creacion)
-  VALUES ('INSERT', NOW(), USER(), NEW.empresa_id, NEW.nombre, NEW.correo, NEW.persona_contacto, NEW.direccion, NEW.sector_id, NEW.creado_por, NEW.fecha_creacion);
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_empresa_update
-BEFORE UPDATE ON empresa
-FOR EACH ROW
-BEGIN
-  SET NEW.modificado_por     = USER();
-  SET NEW.fecha_modificacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_empresa_update
-AFTER UPDATE ON empresa
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_empresa (
-    accion, fecha_accion, usuario_accion,
-    empresa_id, nombre, correo, persona_contacto, direccion, sector_id,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'UPDATE', NOW(), USER(),
-    OLD.empresa_id, OLD.nombre, OLD.correo,
-    OLD.persona_contacto, OLD.direccion, OLD.sector_id,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_empresa_delete
-BEFORE DELETE ON empresa
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_empresa (
-    accion, fecha_accion, usuario_accion,
-    empresa_id, nombre, correo, persona_contacto, direccion, sector_id,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'DELETE', NOW(), USER(),
-    OLD.empresa_id, OLD.nombre, OLD.correo,
-    OLD.persona_contacto, OLD.direccion, OLD.sector_id,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `estado_postulacion`
@@ -1693,7 +1715,7 @@ CREATE TABLE `hist_auth_user` (
   `modificado_por` varchar(100) DEFAULT NULL,
   `fecha_modificacion` datetime DEFAULT NULL,
   PRIMARY KEY (`hist_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1729,45 +1751,49 @@ INSERT INTO `hist_auth_user` VALUES
 (23,'UPDATE','2026-06-04 11:39:17','django_user@localhost',4,'Kevin','kevin@gmail.com',1,0,'django_user@localhost','2026-06-03 13:25:56','django_user@localhost','2026-06-04 11:32:05'),
 (24,'UPDATE','2026-06-04 11:42:55','django_user@localhost',3,'TECNASA','tecnasa.rrhh@gmail.com',1,0,'django_user@localhost','2026-06-02 20:15:56','django_user@localhost','2026-06-04 11:32:23'),
 (25,'UPDATE','2026-06-04 11:43:35','django_user@localhost',4,'Kevin','kevin@gmail.com',1,0,'django_user@localhost','2026-06-03 13:25:56','django_user@localhost','2026-06-04 11:39:17'),
-(26,'UPDATE','2026-06-04 11:47:51','django_user@localhost',3,'TECNASA','tecnasa.rrhh@gmail.com',1,0,'django_user@localhost','2026-06-02 20:15:56','django_user@localhost','2026-06-04 11:42:55');
+(26,'UPDATE','2026-06-04 11:47:51','django_user@localhost',3,'TECNASA','tecnasa.rrhh@gmail.com',1,0,'django_user@localhost','2026-06-02 20:15:56','django_user@localhost','2026-06-04 11:42:55'),
+(27,'UPDATE','2026-06-04 12:42:24','django_user@localhost',1,'admin','admin@example.com',1,1,'system','2026-06-02 15:11:31','django_user@localhost','2026-06-02 15:47:22');
 /*!40000 ALTER TABLE `hist_auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
 
 --
--- Table structure for table `hist_candidato`
+-- Table structure for table `hist_empleos_candidato`
 --
 
-DROP TABLE IF EXISTS `hist_candidato`;
+DROP TABLE IF EXISTS `hist_empleos_candidato`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hist_candidato` (
+CREATE TABLE `hist_empleos_candidato` (
   `hist_id` int(11) NOT NULL AUTO_INCREMENT,
   `accion` varchar(10) NOT NULL,
   `fecha_accion` datetime NOT NULL DEFAULT current_timestamp(),
   `usuario_accion` varchar(100) DEFAULT NULL,
-  `candidato_id` int(11) DEFAULT NULL,
-  `usuario_id` int(11) DEFAULT NULL,
-  `nombre_completo` varchar(100) DEFAULT NULL,
-  `dui` varchar(20) DEFAULT NULL,
+  `candidato_id` bigint(20) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `experiencia` text DEFAULT NULL,
+  `dui` varchar(20) DEFAULT NULL,
   `area_interes` varchar(100) DEFAULT NULL,
+  `estudios` text DEFAULT NULL,
+  `habilidades` text DEFAULT NULL,
   `creado_por` varchar(100) DEFAULT NULL,
   `fecha_creacion` datetime DEFAULT NULL,
   `modificado_por` varchar(100) DEFAULT NULL,
   `fecha_modificacion` datetime DEFAULT NULL,
   PRIMARY KEY (`hist_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hist_candidato`
+-- Dumping data for table `hist_empleos_candidato`
 --
 
-LOCK TABLES `hist_candidato` WRITE;
-/*!40000 ALTER TABLE `hist_candidato` DISABLE KEYS */;
+LOCK TABLES `hist_empleos_candidato` WRITE;
+/*!40000 ALTER TABLE `hist_empleos_candidato` DISABLE KEYS */;
 set autocommit=0;
-/*!40000 ALTER TABLE `hist_candidato` ENABLE KEYS */;
+/*!40000 ALTER TABLE `hist_empleos_candidato` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
 
@@ -1807,6 +1833,43 @@ INSERT INTO `hist_empleos_empresa` VALUES
 (1,'UPDATE','2026-06-02 15:11:31','django_user@localhost',1,'Tech Solutions SV','info@techsolutions.com.sv','2222-3333','San Salvador, El Salvador',NULL,NULL,NULL,NULL),
 (2,'INSERT','2026-06-02 20:15:56','django_user@localhost',2,'TECNASA','tecnasa.rrhh@gmail.com','23421332','San Salvador Centro','django_user@localhost','2026-06-02 20:15:56',NULL,NULL);
 /*!40000 ALTER TABLE `hist_empleos_empresa` ENABLE KEYS */;
+UNLOCK TABLES;
+commit;
+
+--
+-- Table structure for table `hist_empleos_postulacion`
+--
+
+DROP TABLE IF EXISTS `hist_empleos_postulacion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hist_empleos_postulacion` (
+  `hist_id` int(11) NOT NULL AUTO_INCREMENT,
+  `accion` varchar(10) NOT NULL,
+  `fecha_accion` datetime NOT NULL DEFAULT current_timestamp(),
+  `usuario_accion` varchar(100) DEFAULT NULL,
+  `postulacion_id` bigint(20) DEFAULT NULL,
+  `candidato_id` bigint(20) DEFAULT NULL,
+  `vacante_id` bigint(20) DEFAULT NULL,
+  `estado` varchar(20) DEFAULT NULL,
+  `mensaje` text DEFAULT NULL,
+  `fecha_postulacion` datetime(6) DEFAULT NULL,
+  `creado_por` varchar(100) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT NULL,
+  `modificado_por` varchar(100) DEFAULT NULL,
+  `fecha_modificacion` datetime DEFAULT NULL,
+  PRIMARY KEY (`hist_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hist_empleos_postulacion`
+--
+
+LOCK TABLES `hist_empleos_postulacion` WRITE;
+/*!40000 ALTER TABLE `hist_empleos_postulacion` DISABLE KEYS */;
+set autocommit=0;
+/*!40000 ALTER TABLE `hist_empleos_postulacion` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
 
@@ -1868,160 +1931,6 @@ INSERT INTO `hist_empleos_vacante` VALUES
 (15,'INSERT','2026-06-03 13:48:34','3',9,'Recepcionista','Recepcion de documentos','Dos años de experiencia, servicial, buena disposicion, buena presentacion personal.','','TEMPORAL',1,5,2,600.00,'Morazan','ACTIVA','2026-06-10','TECNASA','2026-06-03 13:48:34',NULL,NULL),
 (16,'INSERT','2026-06-04 11:39:06','3',10,'PRUEBAAA','PRUEBA','Prueba','','PRACTICAS',1,11,2,300.00,'Santa Ana','ACTIVA','2026-06-17','TECNASA','2026-06-04 11:39:06',NULL,NULL);
 /*!40000 ALTER TABLE `hist_empleos_vacante` ENABLE KEYS */;
-UNLOCK TABLES;
-commit;
-
---
--- Table structure for table `hist_empresa`
---
-
-DROP TABLE IF EXISTS `hist_empresa`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hist_empresa` (
-  `hist_id` int(11) NOT NULL AUTO_INCREMENT,
-  `accion` varchar(10) NOT NULL,
-  `fecha_accion` datetime NOT NULL DEFAULT current_timestamp(),
-  `usuario_accion` varchar(100) DEFAULT NULL,
-  `empresa_id` int(11) DEFAULT NULL,
-  `nombre` varchar(100) DEFAULT NULL,
-  `correo` varchar(100) DEFAULT NULL,
-  `persona_contacto` varchar(100) DEFAULT NULL,
-  `direccion` varchar(150) DEFAULT NULL,
-  `sector_id` int(11) DEFAULT NULL,
-  `creado_por` varchar(100) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT NULL,
-  `modificado_por` varchar(100) DEFAULT NULL,
-  `fecha_modificacion` datetime DEFAULT NULL,
-  PRIMARY KEY (`hist_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hist_empresa`
---
-
-LOCK TABLES `hist_empresa` WRITE;
-/*!40000 ALTER TABLE `hist_empresa` DISABLE KEYS */;
-set autocommit=0;
-/*!40000 ALTER TABLE `hist_empresa` ENABLE KEYS */;
-UNLOCK TABLES;
-commit;
-
---
--- Table structure for table `hist_oferta`
---
-
-DROP TABLE IF EXISTS `hist_oferta`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hist_oferta` (
-  `hist_id` int(11) NOT NULL AUTO_INCREMENT,
-  `accion` varchar(10) NOT NULL,
-  `fecha_accion` datetime NOT NULL DEFAULT current_timestamp(),
-  `usuario_accion` varchar(100) DEFAULT NULL,
-  `oferta_id` int(11) DEFAULT NULL,
-  `empresa_id` int(11) DEFAULT NULL,
-  `puesto` varchar(100) DEFAULT NULL,
-  `descripcion` text DEFAULT NULL,
-  `requisitos` text DEFAULT NULL,
-  `experiencia_requerida` varchar(100) DEFAULT NULL,
-  `ubicacion` varchar(100) DEFAULT NULL,
-  `tipo_contrato` varchar(50) DEFAULT NULL,
-  `vacantes` int(11) DEFAULT NULL,
-  `salario` decimal(10,2) DEFAULT NULL,
-  `fecha_limite` date DEFAULT NULL,
-  `creado_por` varchar(100) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT NULL,
-  `modificado_por` varchar(100) DEFAULT NULL,
-  `fecha_modificacion` datetime DEFAULT NULL,
-  PRIMARY KEY (`hist_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hist_oferta`
---
-
-LOCK TABLES `hist_oferta` WRITE;
-/*!40000 ALTER TABLE `hist_oferta` DISABLE KEYS */;
-set autocommit=0;
-/*!40000 ALTER TABLE `hist_oferta` ENABLE KEYS */;
-UNLOCK TABLES;
-commit;
-
---
--- Table structure for table `hist_postulacion`
---
-
-DROP TABLE IF EXISTS `hist_postulacion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hist_postulacion` (
-  `hist_id` int(11) NOT NULL AUTO_INCREMENT,
-  `accion` varchar(10) NOT NULL,
-  `fecha_accion` datetime NOT NULL DEFAULT current_timestamp(),
-  `usuario_accion` varchar(100) DEFAULT NULL,
-  `postulacion_id` int(11) DEFAULT NULL,
-  `candidato_id` int(11) DEFAULT NULL,
-  `oferta_id` int(11) DEFAULT NULL,
-  `estado_id` int(11) DEFAULT NULL,
-  `fecha_postulacion` date DEFAULT NULL,
-  `creado_por` varchar(100) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT NULL,
-  `modificado_por` varchar(100) DEFAULT NULL,
-  `fecha_modificacion` datetime DEFAULT NULL,
-  PRIMARY KEY (`hist_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hist_postulacion`
---
-
-LOCK TABLES `hist_postulacion` WRITE;
-/*!40000 ALTER TABLE `hist_postulacion` DISABLE KEYS */;
-set autocommit=0;
-/*!40000 ALTER TABLE `hist_postulacion` ENABLE KEYS */;
-UNLOCK TABLES;
-commit;
-
---
--- Table structure for table `hist_usuarios`
---
-
-DROP TABLE IF EXISTS `hist_usuarios`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hist_usuarios` (
-  `hist_id` int(11) NOT NULL AUTO_INCREMENT,
-  `accion` varchar(10) NOT NULL COMMENT 'UPDATE o DELETE',
-  `fecha_accion` datetime NOT NULL DEFAULT current_timestamp(),
-  `usuario_accion` varchar(100) DEFAULT NULL,
-  `usuario_id` int(11) DEFAULT NULL,
-  `nombre` varchar(100) DEFAULT NULL,
-  `correo` varchar(100) DEFAULT NULL,
-  `contrasenia` varchar(255) DEFAULT NULL,
-  `tipo_id` int(11) DEFAULT NULL,
-  `creado_por` varchar(100) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT NULL,
-  `modificado_por` varchar(100) DEFAULT NULL,
-  `fecha_modificacion` datetime DEFAULT NULL,
-  PRIMARY KEY (`hist_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hist_usuarios`
---
-
-LOCK TABLES `hist_usuarios` WRITE;
-/*!40000 ALTER TABLE `hist_usuarios` DISABLE KEYS */;
-set autocommit=0;
-INSERT INTO `hist_usuarios` VALUES
-(1,'UPDATE','2026-06-02 14:55:12','django_user@localhost',999,'Test User','test@test.com','pass123',1,'django_user@localhost','2026-06-02 14:55:12',NULL,NULL),
-(2,'DELETE','2026-06-02 14:55:19','django_user@localhost',999,'Test User Updated','test@test.com','pass123',1,'django_user@localhost','2026-06-02 14:55:12','django_user@localhost','2026-06-02 14:55:12');
-/*!40000 ALTER TABLE `hist_usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
 
@@ -2094,133 +2003,6 @@ set autocommit=0;
 /*!40000 ALTER TABLE `oferta` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_oferta_insert
-BEFORE INSERT ON oferta
-FOR EACH ROW
-BEGIN
-  SET NEW.creado_por     = USER();
-  SET NEW.fecha_creacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_oferta_insert
-AFTER INSERT ON oferta
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_oferta (accion, fecha_accion, usuario_accion, oferta_id, empresa_id, puesto, descripcion, requisitos, experiencia_requerida, ubicacion, tipo_contrato, vacantes, salario, fecha_limite, creado_por, fecha_creacion)
-  VALUES ('INSERT', NOW(), USER(), NEW.oferta_id, NEW.empresa_id, NEW.puesto, NEW.descripcion, NEW.requisitos, NEW.experiencia_requerida, NEW.ubicacion, NEW.tipo_contrato, NEW.vacantes, NEW.salario, NEW.fecha_limite, NEW.creado_por, NEW.fecha_creacion);
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_oferta_update
-BEFORE UPDATE ON oferta
-FOR EACH ROW
-BEGIN
-  SET NEW.modificado_por     = USER();
-  SET NEW.fecha_modificacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_oferta_update
-AFTER UPDATE ON oferta
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_oferta (
-    accion, fecha_accion, usuario_accion,
-    oferta_id, empresa_id, puesto, descripcion, requisitos,
-    experiencia_requerida, ubicacion, tipo_contrato,
-    vacantes, salario, fecha_limite,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'UPDATE', NOW(), USER(),
-    OLD.oferta_id, OLD.empresa_id, OLD.puesto, OLD.descripcion, OLD.requisitos,
-    OLD.experiencia_requerida, OLD.ubicacion, OLD.tipo_contrato,
-    OLD.vacantes, OLD.salario, OLD.fecha_limite,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_oferta_delete
-BEFORE DELETE ON oferta
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_oferta (
-    accion, fecha_accion, usuario_accion,
-    oferta_id, empresa_id, puesto, descripcion, requisitos,
-    experiencia_requerida, ubicacion, tipo_contrato,
-    vacantes, salario, fecha_limite,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'DELETE', NOW(), USER(),
-    OLD.oferta_id, OLD.empresa_id, OLD.puesto, OLD.descripcion, OLD.requisitos,
-    OLD.experiencia_requerida, OLD.ubicacion, OLD.tipo_contrato,
-    OLD.vacantes, OLD.salario, OLD.fecha_limite,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `postulacion`
@@ -2259,127 +2041,6 @@ set autocommit=0;
 /*!40000 ALTER TABLE `postulacion` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_postulacion_insert
-BEFORE INSERT ON postulacion
-FOR EACH ROW
-BEGIN
-  SET NEW.creado_por     = USER();
-  SET NEW.fecha_creacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_postulacion_insert
-AFTER INSERT ON postulacion
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_postulacion (accion, fecha_accion, usuario_accion, postulacion_id, candidato_id, oferta_id, estado_id, fecha_postulacion, creado_por, fecha_creacion)
-  VALUES ('INSERT', NOW(), USER(), NEW.postulacion_id, NEW.candidato_id, NEW.oferta_id, NEW.estado_id, NEW.fecha_postulacion, NEW.creado_por, NEW.fecha_creacion);
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_postulacion_update
-BEFORE UPDATE ON postulacion
-FOR EACH ROW
-BEGIN
-  SET NEW.modificado_por     = USER();
-  SET NEW.fecha_modificacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_postulacion_update
-AFTER UPDATE ON postulacion
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_postulacion (
-    accion, fecha_accion, usuario_accion,
-    postulacion_id, candidato_id, oferta_id, estado_id, fecha_postulacion,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'UPDATE', NOW(), USER(),
-    OLD.postulacion_id, OLD.candidato_id, OLD.oferta_id,
-    OLD.estado_id, OLD.fecha_postulacion,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_postulacion_delete
-BEFORE DELETE ON postulacion
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_postulacion (
-    accion, fecha_accion, usuario_accion,
-    postulacion_id, candidato_id, oferta_id, estado_id, fecha_postulacion,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'DELETE', NOW(), USER(),
-    OLD.postulacion_id, OLD.candidato_id, OLD.oferta_id,
-    OLD.estado_id, OLD.fecha_postulacion,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `sector`
@@ -2467,125 +2128,6 @@ set autocommit=0;
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_usuarios_insert
-BEFORE INSERT ON usuarios
-FOR EACH ROW
-BEGIN
-  SET NEW.creado_por     = USER();
-  SET NEW.fecha_creacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`django_user`@`localhost`*/ /*!50003 TRIGGER trg_hist_usuarios_insert
-AFTER INSERT ON usuarios
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_usuarios (accion, fecha_accion, usuario_accion, usuario_id, nombre, correo, contrasenia, tipo_id, creado_por, fecha_creacion)
-  VALUES ('INSERT', NOW(), USER(), NEW.usuario_id, NEW.nombre, NEW.correo, NEW.contrasenia, NEW.tipo_id, NEW.creado_por, NEW.fecha_creacion);
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_audit_usuarios_update
-BEFORE UPDATE ON usuarios
-FOR EACH ROW
-BEGIN
-  SET NEW.modificado_por     = USER();
-  SET NEW.fecha_modificacion = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_usuarios_update
-AFTER UPDATE ON usuarios
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_usuarios (
-    accion, fecha_accion, usuario_accion,
-    usuario_id, nombre, correo, contrasenia, tipo_id,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'UPDATE', NOW(), USER(),
-    OLD.usuario_id, OLD.nombre, OLD.correo, OLD.contrasenia, OLD.tipo_id,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_uca1400_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_hist_usuarios_delete
-BEFORE DELETE ON usuarios
-FOR EACH ROW
-BEGIN
-  INSERT INTO hist_usuarios (
-    accion, fecha_accion, usuario_accion,
-    usuario_id, nombre, correo, contrasenia, tipo_id,
-    creado_por, fecha_creacion, modificado_por, fecha_modificacion
-  ) VALUES (
-    'DELETE', NOW(), USER(),
-    OLD.usuario_id, OLD.nombre, OLD.correo, OLD.contrasenia, OLD.tipo_id,
-    OLD.creado_por, OLD.fecha_creacion, OLD.modificado_por, OLD.fecha_modificacion
-  );
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Dumping events for database 'bolsa_trabajo'
@@ -2610,11 +2152,11 @@ DELIMITER ;;
   ANALYZE TABLE postulacion;
   ANALYZE TABLE empresa;
   ANALYZE TABLE notificacion;
-  ANALYZE TABLE hist_usuarios;
-  ANALYZE TABLE hist_candidato;
-  ANALYZE TABLE hist_oferta;
-  ANALYZE TABLE hist_postulacion;
-  ANALYZE TABLE hist_empresa;
+  ANALYZE TABLE hist_auth_user;
+  ANALYZE TABLE hist_empleos_empresa;
+  ANALYZE TABLE hist_empleos_vacante;
+  ANALYZE TABLE hist_empleos_candidato;
+  ANALYZE TABLE hist_empleos_postulacion;
 END */ ;;
 /*!50003 SET time_zone             = @saved_time_zone */ ;;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;;
@@ -2655,10 +2197,10 @@ DELIMITER ;;
 /*!50003 SET time_zone             = 'SYSTEM' */ ;;
 /*!50106 CREATE*/ /*!50117 DEFINER=`root`@`localhost`*/ /*!50106 EVENT `job_optimizar_tablas` ON SCHEDULE EVERY 1 WEEK STARTS '2026-06-07 03:00:00' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
   OPTIMIZE TABLE notificacion;
-  OPTIMIZE TABLE postulacion;
-  OPTIMIZE TABLE hist_postulacion;
-  OPTIMIZE TABLE hist_oferta;
-  OPTIMIZE TABLE hist_usuarios;
+  OPTIMIZE TABLE empleos_postulacion;
+  OPTIMIZE TABLE hist_empleos_postulacion;
+  OPTIMIZE TABLE hist_empleos_vacante;
+  OPTIMIZE TABLE hist_auth_user;
 END */ ;;
 /*!50003 SET time_zone             = @saved_time_zone */ ;;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;;
@@ -2678,11 +2220,11 @@ DELIMITER ;;
 /*!50003 SET @saved_time_zone      = @@time_zone */ ;;
 /*!50003 SET time_zone             = 'SYSTEM' */ ;;
 /*!50106 CREATE*/ /*!50117 DEFINER=`root`@`localhost`*/ /*!50106 EVENT `job_purgar_historicos` ON SCHEDULE EVERY 1 MONTH STARTS '2026-07-01 02:00:00' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
-  DELETE FROM hist_usuarios    WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
-  DELETE FROM hist_candidato   WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
-  DELETE FROM hist_oferta      WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
-  DELETE FROM hist_postulacion WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
-  DELETE FROM hist_empresa     WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
+  DELETE FROM hist_auth_user            WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
+  DELETE FROM hist_empleos_empresa      WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
+  DELETE FROM hist_empleos_vacante      WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
+  DELETE FROM hist_empleos_candidato    WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
+  DELETE FROM hist_empleos_postulacion  WHERE fecha_accion < (NOW() - INTERVAL 2 YEAR);
 END */ ;;
 /*!50003 SET time_zone             = @saved_time_zone */ ;;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;;
@@ -2765,4 +2307,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-06-04 12:23:17
+-- Dump completed on 2026-06-04 19:42:53
