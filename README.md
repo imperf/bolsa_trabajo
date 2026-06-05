@@ -115,6 +115,16 @@ mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < empleos_triggers_update.sql
 
 > Nota: Los dumps no incluyen triggers inline para evitar errores de orden de tablas. Este script crea las tablas de historial primero y luego los triggers, evitando el problema. Django migrations no crea triggers de MySQL, por lo que este paso es siempre necesario.
 
+### 5c. Crear eventos programados y procedimientos almacenados (opcional, requiere root)
+
+Para activar los jobs de mantenimiento automático (purgar históricos, optimizar tablas, matar conexiones dormidas, etc.):
+
+```bash
+mysql -u root -p bolsa_trabajo < empleos_jobs.sql
+```
+
+> Nota: Este paso requiere privilegios de root ya que crea eventos programados (`EVENT`) y procedimientos almacenados (`PROCEDURE`). El event scheduler de MySQL debe estar activado (`SET GLOBAL event_scheduler = ON;`). Este paso es opcional para desarrollo local.
+
 ### 6. Ejecutar servidor de desarrollo
 
 ```bash
