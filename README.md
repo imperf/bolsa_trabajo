@@ -82,12 +82,12 @@ EXIT;
 
 ### 5. Importar base de datos
 
-**Opción A - Backup completo (con triggers y datos):**
+**Opción A - Backup completo (con triggers, datos, eventos y procedimientos):**
 ```bash
 mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < bolsa_trabajo_backup_completo.sql
 ```
 
-**Opción B - Backup de deployment (sin triggers, con datos):**
+**Opción B - Backup de deployment (con triggers y datos, sin eventos ni procedimientos):**
 ```bash
 mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < bolsa_trabajo_deploy.sql
 ```
