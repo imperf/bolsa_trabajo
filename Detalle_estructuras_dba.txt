@@ -1,0 +1,257 @@
+================================================================================
+RESUMEN DE ESTRUCTURAS DBA – BASE DE DATOS: bolsa_trabajo
+================================================================================
+
+Este documento enumera y explica brevemente cada estructura de base de datos
+orientada a la administración (DBA), monitoreo, auditoría y mantenimiento.
+
+================================================================================
+1. TABLAS DE AUDITORÍA Y CONTROL (DBA)
+================================================================================
+
+Tabla: dba_alertas
+-------------------------------------------------------------------------------
+Propósito: Registro centralizado de alertas automáticas del sistema.
+Uso esperado: Almacena eventos críticos como espacio en disco, fragmentación,
+              bloqueos, accesos anómalos o problemas de conexiones.
+              Permite su análisis y marcado como "atendida".
+
+Tabla: pkg_registro
+-------------------------------------------------------------------------------
+Propósito: Catálogo de procedimientos almacenados (simula un repositorio de paquetes).
+Uso esperado: Guarda metadatos de los SPs creados (nombre, versión, descripción,
+              fecha de despliegue). Útil para documentar lógica de negocio empaquetada.
+
+================================================================================
+2. TABLAS DE HISTORIAL (AUDITORÍA DE DATOS)
+================================================================================
+
+Tabla: hist_auth_user
+-------------------------------------------------------------------------------
+Propósito: Historial de cambios (INSERT/UPDATE/DELETE) sobre la tabla auth_user.
+Uso esperado: Auditoría de modificaciones en usuarios del sistema Django.
+              Incluye acción, usuario que ejecutó, fecha y los valores previos.
+
+Tabla: hist_empleos_candidato
+-------------------------------------------------------------------------------
+Propósito: Historial de cambios sobre la tabla empleos_candidato.
+Uso esperado: Rastrear modificaciones en perfiles de candidatos.
+
+Tabla: hist_empleos_empresa
+-------------------------------------------------------------------------------
+Propósito: Historial de cambios sobre la tabla empleos_empresa.
+Uso esperado: Auditoría de modificaciones en datos de empresas empleadoras.
+
+Tabla: hist_empleos_postulacion
+-------------------------------------------------------------------------------
+Propósito: Historial de cambios sobre la tabla empleos_postulacion.
+Uso esperado: Seguimiento de cambios de estado en postulaciones.
+
+Tabla: hist_empleos_vacante
+-------------------------------------------------------------------------------
+Propósito: Historial de cambios sobre la tabla empleos_vacante.
+Uso esperado: Auditoría de creación, modificación y eliminación de vacantes.
+
+================================================================================
+3. VISTAS DE MONITOREO DBA
+================================================================================
+
+Vista: vw_salud_tablas
+-------------------------------------------------------------------------------
+Propósito: Métricas de fragmentación y tamaño físico de tablas.
+Uso esperado: Identificar tablas con alto porcentaje de fragmentación (>85%)
+              que requieren mantenimiento (OPTIMIZE TABLE).
+
+Vista: vw_top10_queries_lentos
+-------------------------------------------------------------------------------
+Propósito: Consultas con mayor tiempo promedio de ejecución (performance_schema).
+Uso esperado: Detectar consultas candidatas a optimización por lentitud.
+
+Vista: vw_top10_queries_costosos
+-------------------------------------------------------------------------------
+Propósito: Consultas que examinan muchas filas pero retornan pocas (baja eficiencia).
+Uso esperado: Optimizar queries con alto desperdicio de recursos.
+
+Vista: vw_top10_usuarios_sesiones
+-------------------------------------------------------------------------------
+Propósito: Sesiones activas por usuario/host, incluyendo conexiones dormidas.
+Uso esperado: Monitoreo de carga y detección de conexiones ociosas.
+
+Vista: vw_estado_postulaciones_vacante
+-------------------------------------------------------------------------------
+Propósito: Resumen de postulaciones agrupado por vacante (pendientes, aceptadas, etc.).
+Uso esperado: Reporte ejecutivo para empresas sobre el estado de sus vacantes.
+
+================================================================================
+4. PROCEDIMIENTOS ALMACENADOS DBA
+================================================================================
+
+sp_evaluar_todas_alertas
+-------------------------------------------------------------------------------
+Propósito: Ejecuta todas las alertas DBA (espacio, fragmentación, bloqueos, accesos).
+Uso esperado: Llamado desde el evento programado evt_evaluar_alertas.
+
+sp_alerta_espacio_bd
+-------------------------------------------------------------------------------
+Propósito: Verifica el espacio total usado por la BD y genera alertas.
+Uso esperado: Alertar antes de llegar a límites críticos (warning/crítico).
+
+sp_alerta_fragmentacion
+-------------------------------------------------------------------------------
+Propósito: Detecta tablas con más del 85% de fragmentación.
+Uso esperado: Programar mantenimiento (OPTIMIZE TABLE) sobre tablas fragmentadas.
+
+sp_alerta_bloqueos
+-------------------------------------------------------------------------------
+Propósito: Detecta sesiones con consultas lentas (>60s) y transacciones en espera de lock.
+Uso esperado: Identificar cuellos de botella por bloqueos.
+
+sp_alerta_accesos_denegados
+-------------------------------------------------------------------------------
+Propósito: Monitorea sesiones expiradas y actividad administrativa inusual.
+Uso esperado: Detectar posibles intentos de acceso no autorizado.
+
+sp_alerta_conexiones
+-------------------------------------------------------------------------------
+Propósito: Evalúa porcentaje de conexiones activas vs max_connections.
+Uso esperado: Prevenir saturación del servidor.
+
+sp_kill_sleeping_connections
+-------------------------------------------------------------------------------
+Propósito: Finaliza conexiones dormidas por más de 10 minutos.
+Uso esperado: Liberar recursos ociosos automáticamente.
+
+sp_cerrar_vacantes_vencidas
+-------------------------------------------------------------------------------
+Propósito: Cambia a "cerrado" las vacantes con fecha_limite anterior a hoy.
+Uso esperado: Mantenimiento diario de ofertas expiradas.
+
+sp_notificar_candidatos_inactivos
+-------------------------------------------------------------------------------
+Propósito: Envía notificaciones a candidatos que nunca se han postulado.
+Uso esperado: Fomentar participación mediante recordatorios automáticos.
+
+================================================================================
+5. FUNCIONES DE UTILIDAD (DBA y métricas)
+================================================================================
+
+fn_dias_restantes_vacante
+-------------------------------------------------------------------------------
+Propósito: Calcula días hasta fecha_limite de una vacante.
+Uso esperado: Mostrar urgencia/vencimiento en portales de empleo.
+
+fn_porcentaje_ocupacion_vacante
+-------------------------------------------------------------------------------
+Propósito: % de plazas cubiertas (aceptadas) sobre total de vacantes.
+Uso esperado: Control de llenado de ofertas.
+
+fn_total_postulaciones_candidato
+-------------------------------------------------------------------------------
+Propósito: Cuenta postulaciones de un candidato (tablas nueva + antigua).
+Uso esperado: Métrica de actividad del candidato.
+
+fn_estado_vacante_label
+-------------------------------------------------------------------------------
+Propósito: Convierte estado técnico (activo, cerrado) a texto amigable con emoji.
+Uso esperado: Interfaz de usuario.
+
+fn_edad_laboral
+-------------------------------------------------------------------------------
+Propósito: Clasifica años de experiencia en categorías: Sin exp, Junior, Semi-Senior, Senior.
+Uso esperado: Estandarización de niveles en vacantes.
+
+================================================================================
+6. EVENTOS PROGRAMADOS (JOBS AUTOMÁTICOS)
+================================================================================
+
+evt_evaluar_alertas
+-------------------------------------------------------------------------------
+Frecuencia: Cada 15 minutos
+Acción: Llama a sp_evaluar_todas_alertas()
+Uso esperado: Monitoreo continuo proactivo.
+
+job_matar_conexiones_dormidas
+-------------------------------------------------------------------------------
+Frecuencia: Cada 30 minutos
+Acción: Ejecuta sp_kill_sleeping_connections()
+Uso esperado: Limpieza de conexiones ociosas.
+
+job_actualizar_estadisticas
+-------------------------------------------------------------------------------
+Frecuencia: Diario (04:00)
+Acción: ANALYZE TABLE sobre tablas principales
+Uso esperado: Mantener estadísticas actualizadas para el optimizador.
+
+job_purgar_notificaciones
+-------------------------------------------------------------------------------
+Frecuencia: Diario (01:00)
+Acción: Elimina notificaciones leídas de más de 60 días
+Uso esperado: Control de crecimiento de tabla de notificaciones.
+
+job_optimizar_tablas
+-------------------------------------------------------------------------------
+Frecuencia: Semanal
+Acción: OPTIMIZE TABLE sobre tablas históricas y de postulaciones
+Uso esperado: Recuperar espacio y reducir fragmentación.
+
+job_purgar_historicos
+-------------------------------------------------------------------------------
+Frecuencia: Mensual
+Acción: Elimina registros de auditoría más antiguos de 2 años
+Uso esperado: Gestión de retención de datos históricos.
+
+================================================================
+ 7. TRIGGERS DE AUDITORÍA Y SEGURIDAD
+================================================================
+
+OBJETIVO
+--------
+Garantizar que cada INSERT, UPDATE y DELETE en tablas críticas
+quede registrado automáticamente con el usuario de BD que realizó
+la operación y la fecha exacta. Los triggers BEFORE INSERT/UPDATE
+rellenan los campos creado_por, fecha_creacion, modificado_por y
+fecha_modificacion directamente en el registro afectado. Los
+triggers AFTER INSERT/UPDATE y BEFORE DELETE copian el estado
+del registro a una tabla histórica permanente.
+
+Tabla: auth_user
+  - trg_audit_auth_user_insert    (BEFORE INSERT → rellena creado_por)
+  - trg_audit_auth_user_update    (BEFORE UPDATE → rellena modificado_por)
+  - trg_hist_auth_user_insert     (AFTER INSERT  → copia a hist_auth_user)
+  - trg_hist_auth_user_update     (AFTER UPDATE  → copia a hist_auth_user)
+  - trg_hist_auth_user_delete     (BEFORE DELETE → copia a hist_auth_user)
+
+Tabla: empleos_candidato
+  - trg_audit_candidato_django_insert  (BEFORE INSERT)
+  - trg_audit_candidato_django_update  (BEFORE UPDATE)
+  - trg_hist_candidato_django_insert   (AFTER INSERT  → hist_empleos_candidato)
+  - trg_hist_candidato_django_update   (AFTER UPDATE  → hist_empleos_candidato)
+  - trg_hist_candidato_django_delete   (BEFORE DELETE → hist_empleos_candidato)
+
+Tabla: empleos_empresa
+  - trg_audit_empresa_django_insert    (BEFORE INSERT)
+  - trg_audit_empresa_django_update    (BEFORE UPDATE)
+  - trg_hist_empresa_django_insert     (AFTER INSERT  → hist_empleos_empresa)
+  - trg_hist_empresa_django_update     (AFTER UPDATE  → hist_empleos_empresa)
+  - trg_hist_empresa_django_delete     (BEFORE DELETE → hist_empleos_empresa)
+
+Tabla: empleos_postulacion
+  - trg_audit_postulacion_django_insert  (BEFORE INSERT)
+  - trg_audit_postulacion_django_update  (BEFORE UPDATE)
+  - trg_hist_postulacion_django_insert   (AFTER INSERT  → hist_empleos_postulacion)
+  - trg_hist_postulacion_django_update   (AFTER UPDATE  → hist_empleos_postulacion)
+  - trg_hist_postulacion_django_delete   (BEFORE DELETE → hist_empleos_postulacion)
+
+Tabla: empleos_vacante
+  - trg_audit_vacante_django_insert    (BEFORE INSERT)
+  - trg_audit_vacante_django_update    (BEFORE UPDATE)
+  - trg_hist_vacante_django_insert     (AFTER INSERT  → hist_empleos_vacante)
+  - trg_hist_vacante_django_update     (AFTER UPDATE  → hist_empleos_vacante)
+  - trg_hist_vacante_django_delete     (BEFORE DELETE → hist_empleos_vacante)
+
+Tablas históricas existentes:
+  - hist_auth_user
+  - hist_empleos_candidato
+  - hist_empleos_empresa
+  - hist_empleos_postulacion
+  - hist_empleos_vacante
