@@ -89,41 +89,14 @@ EXIT;
 
 **Opción A - Backup completo (con datos, eventos y procedimientos):**
 ```bash
-mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < bolsa_trabajo_backup_completo.sql
+mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < respaldo_completo_MySQL.sql
 ```
 
-**Opción B - Backup de deployment (solo con datos, sin triggers ni eventos):**
-```bash
-mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < bolsa_trabajo_deploy.sql
-```
-
-**Opción C - Empezar desde cero (solo estructura, sin datos):**
+**Opción B - Empezar desde cero (solo estructura, sin datos):**
 ```bash
 python manage.py migrate
 ```
 > Nota: Con esta opción no tendrás datos de ejemplo, categorías, ni usuario admin. Tendrás que crearlos manualmente.
-
-> **Importante:** Las opciones A y B no requieren ejecutar `migrate` ya que los dumps incluyen el esquema completo y la tabla `django_migrations` con todas las migraciones marcadas como aplicadas.
-
-### 5b. Crear triggers y tablas de auditoría (requerido para todas las opciones)
-
-Después de importar la base de datos (o ejecutar migrate), crear las tablas de historial y los triggers de auditoría:
-
-```bash
-mysql -u django_user -p'MIRT2025$$' bolsa_trabajo < empleos_triggers_update.sql
-```
-
-> Nota: Los dumps no incluyen triggers inline para evitar errores de orden de tablas. Este script crea las tablas de historial primero y luego los triggers, evitando el problema. Django migrations no crea triggers de MySQL, por lo que este paso es siempre necesario.
-
-### 5c. Crear eventos programados y procedimientos almacenados (opcional, requiere root)
-
-Para activar los jobs de mantenimiento automático (purgar históricos, optimizar tablas, matar conexiones dormidas, etc.):
-
-```bash
-mysql -u root -p bolsa_trabajo < empleos_jobs.sql
-```
-
-> Nota: Este paso requiere privilegios de root ya que crea eventos programados (`EVENT`) y procedimientos almacenados (`PROCEDURE`). El event scheduler de MySQL debe estar activado (`SET GLOBAL event_scheduler = ON;`). Este paso es opcional para desarrollo local.
 
 ### 6. Ejecutar servidor de desarrollo
 
