@@ -761,8 +761,16 @@ def admin_panel(request):
         num_vacantes=Count('vacante', filter=Q(vacante__estado='ACTIVA'))
     ).order_by('-num_vacantes')
     
-    # Máximo de vacantes para escalar el gráfico
+    # Calcular porcentaje de barra para cada área
     max_vacantes_area = areas_con_vacantes[0].num_vacantes if areas_con_vacantes and areas_con_vacantes[0].num_vacantes > 0 else 1
+    areas_con_porcentaje = []
+    for area in areas_con_vacantes:
+        porcentaje = int((area.num_vacantes / max_vacantes_area) * 100) if max_vacantes_area > 0 else 0
+        areas_con_porcentaje.append({
+            'nombre': area.nombre,
+            'num_vacantes': area.num_vacantes,
+            'porcentaje': porcentaje,
+        })
     
     return render(request, 'empleos/admin/panel.html', {
         'total_usuarios': total_usuarios,
@@ -773,8 +781,7 @@ def admin_panel(request):
         'total_categorias': total_categorias,
         'ultimos_usuarios': ultimos_usuarios,
         'empresas_con_vacantes': empresas_con_vacantes,
-        'areas_con_vacantes': areas_con_vacantes,
-        'max_vacantes_area': max_vacantes_area,
+        'areas_con_vacantes': areas_con_porcentaje,
     })
 
 
