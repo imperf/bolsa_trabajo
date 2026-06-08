@@ -738,7 +738,7 @@ def admin_panel(request):
         messages.error(request, 'No tienes permiso para acceder al panel de administración.')
         return redirect('inicio')
     
-    from django.db.models import Count
+    from django.db.models import Count, Q
     
     # Estadísticas
     total_usuarios = User.objects.count()
@@ -751,6 +751,19 @@ def admin_panel(request):
     # Últimos usuarios registrados
     ultimos_usuarios = User.objects.order_by('-date_joined')[:10]
     
+    # Empresas con cantidad de vacantes (ordenadas de mayor a menor)
+    empresas_con_vacantes = Empresa.objects.annotate(
+        num_vacantes=Count('vacante')
+    ).order_by('-num_vacantes')
+    
+    # Áreas (categorías) con más ofertas de empleo activas
+    areas_con_vacantes = Categoria.objects.annotate(
+        num_vacantes=Count('vacante', filter=Q(vacante__estado='ACTIVA'))
+    ).order_by('-num_vacantes')
+    
+    # Máximo de vacantes para escalar el gráfico
+    max_vacantes_area = areas_con_vacantes[0].num_vacantes if areas_con_vacantes and areas_con_vacantes[0].num_vacantes > 0 else 1
+    
     return render(request, 'empleos/admin/panel.html', {
         'total_usuarios': total_usuarios,
         'total_candidatos': total_candidatos,
@@ -759,6 +772,9 @@ def admin_panel(request):
         'total_postulaciones': total_postulaciones,
         'total_categorias': total_categorias,
         'ultimos_usuarios': ultimos_usuarios,
+        'empresas_con_vacantes': empresas_con_vacantes,
+        'areas_con_vacantes': areas_con_vacantes,
+        'max_vacantes_area': max_vacantes_area,
     })
 
 
